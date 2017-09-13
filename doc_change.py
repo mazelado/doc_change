@@ -765,7 +765,7 @@ def insert_affected_part_no():
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
-@app.route('/edit_affected_part_no/')
+@app.route('/edit_affected_part_no/', methods=['POST'])
 def update_affected_part_no():
     """
     Update a row in affected_part_no table.

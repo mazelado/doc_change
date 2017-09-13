@@ -72,8 +72,14 @@
                                     <td>{{ row['routing'] }}</td>
                                     <td>{{ row['description'] }}</td>
                                     <td>
-                                        <button class="btn btn-primary" data-toggle="modal"
-                                                data-target="#AffectedPartsModal">
+                                        <button class="btn btn-primary" value="Edit" data-toggle="modal"
+                                                data-target="#AffectedPartsModal"
+                                                data-row_id="{{ row['id'] }}"
+                                                data-doc_change_id="{{ row['doc_change_id'] }}"
+                                                data-part_no="{{ row['part_no'] }}"
+                                                data-revision="{{ row['revision'] }}"
+                                                data-routing="{{ row['routing'] }}"
+                                                data-description="{{ row['description'] }}">
                                             <span class="glyphicon glyphicon-pencil"></span>
                                         </button>
                                         <form method="post"
@@ -88,14 +94,12 @@
                             </tbody>
                         </table>
                         <br>
-                        <button class="btn btn-primary pull-right" data-toggle="modal"
+                        <button class="btn btn-primary pull-right" value="Add" data-toggle="modal"
                                 data-target="#AffectedPartsModal">
                             <span class="glyphicon glyphicon-plus-sign"></span> Add Part No
                         </button>
 
                         <!-- Affected Parts Modal Window -->
-                        {# TODO: Populate modal form when clicking the Edit button #}
-                        {# https://getbootstrap.com/docs/3.3/javascript/#modals-related-target #}
                         <div class="modal fade" id="AffectedPartsModal" tabindex="-1" role="dialog"
                              aria-labelledby="AffectedPartsModalLabel">
                             <div class="modal-dialog" role="document">
@@ -109,6 +113,7 @@
                                                 No</h4>
                                         </div>
                                         <div class="modal-body">
+                                            {{ render_field(doc_change_affected_parts_form.id, class='form-control') }}
                                             {{ render_field(doc_change_affected_parts_form.doc_change_id, class='form-control') }}
                                             {{ render_field(doc_change_affected_parts_form.part_no, class='form-control') }}
                                             {{ render_field(doc_change_affected_parts_form.desc, class='form-control') }}
@@ -116,10 +121,10 @@
                                             {{ render_field(doc_change_affected_parts_form.routing, class='form-control') }}
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            <button type="button" class="btn btn-default" id="close" data-dismiss="modal">
                                                 <span class="glyphicon glyphicon-remove"></span> Close
                                             </button>
-                                            <button class="btn btn-primary" type="submit" value="Login">
+                                            <button class="btn btn-primary" type="submit" id="save">
                                                 <span class="glyphicon glyphicon-save"></span> Save Changes
                                             </button>
                                         </div>
@@ -314,4 +319,51 @@
 
         {% endif %}
     </div>
+{% endblock %}
+
+{% block js %}
+    <!-- Populate Affected Parts Modal when edit button is clicked -->
+    <script>
+        $('#AffectedPartsModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+
+            if (button.val() == "Edit") {
+                // Change form action to UPDATE
+                modal.find('.modal-content form').attr("action", "{{ url_for('update_affected_part_no') }}");
+
+                // Change save button text
+                modal.find('.modal-footer #save').html("<span class=\"glyphicon glyphicon-save\"></span> Update")
+
+                // Get data from button
+                var row_id = button.data('row_id');
+                var doc_change_id = button.data('doc_change_id');
+                var part_no = button.data('part_no');
+                var revision = button.data('revision');
+                var description = button.data('description');
+                var routing = button.data('routing');
+
+                // Populate fields
+                modal.find('.modal-body #id').val(row_id);
+                modal.find('.modal-body #doc_change_id').val(doc_change_id);
+                modal.find('.modal-body #part_no').val(part_no);
+                modal.find('.modal-body #desc').val(description);
+                modal.find('.modal-body #rev').val(revision);
+                modal.find('.modal-body #routing').val(routing);
+            } else if (button.val() == "Add") {
+                // Change form action to INSERT
+                modal.find('.modal-content form').attr("action", "{{ url_for('insert_affected_part_no') }}");
+
+                // Change save button text
+                modal.find('.modal-footer #save').html("<span class=\"glyphicon glyphicon-save\"></span> Add")
+
+                // Clear fields
+                modal.find('.modal-body #id').val("");
+                modal.find('.modal-body #part_no').val("");
+                modal.find('.modal-body #desc').val("");
+                modal.find('.modal-body #rev').val("");
+                modal.find('.modal-body #routing').val("");
+            }
+        })
+    </script>
 {% endblock %}

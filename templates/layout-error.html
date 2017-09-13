@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Error - Document Change System</title>
+
+    <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/crt.css') }}">
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+</head>
+<body>
+<div class="molding">
+    <input type="checkbox" id="switch" checked>
+    <label for="switch" class="switch-label"></label>
+
+    <br/>
+    <br/>
+
+    <div class="band">
+        <span class="fanuc">FANUC</span>&nbsp;&nbsp;<span class="series">OM</span>
+    </div>
+    <div class="container">
+        <div class="screen" width="640px" height="480px">
+            <a href="/">
+        <pre class="alarmtext">
+{% block screen %}{% endblock %}
+        </pre>
+            </a>
+        </div>
+    </div>
+</div>
+<div class="error-message">
+    {% block body %}{% endblock %}
+</div>
+</body>
+</html>

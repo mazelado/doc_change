@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block navbar %}
+    <div class="jumbotron">
+        <h1>Document Change System</h1>
+        <p>Quickly and easily guide changes through the organization, knowing that every affected document is assigned,
+            tracked, and followed up on.</p>
+        <p>
+            <a class="btn btn-lg btn-primary" href="{{ url_for('show_login') }}">Get Started</a>
+        </p>
+    </div>
+{% endblock %}

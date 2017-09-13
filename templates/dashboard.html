@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+{% block body %}
+    <div class="container">
+        {% if error %}
+            <div class="alert alert-danger">
+                <p><strong>Error:</strong> {{ error }}</p>
+            </div>
+        {% endif %}
+    </div>
+    <div class="container">
+        <h2>Dashboard for {{ session.name }}</h2>
+    </div>
+
+    <!-- Pending Requests Panel -->
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Pending Requests</h4>
+            </div>
+            <div class="panel-body">
+                <div class="table table-responsive">
+                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
+                        <thead>
+                        <tr>
+                            <th data-sortable="true" data-align="center">ID</th>
+                            <th data-sortable="true" data-align="center">Submit Date</th>
+                            <th data-sortable="false" data-align="left">Problem</th>
+                            <th data-sortable="false" data-align="left">Proposal</th>
+                            <th data-sortable="false" data-align="left">Affected Part Nos</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {# TODO: add class="danger" for past due requests #}
+                        {% for row in req_results %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
+                                </td>
+                                <td>{{ row['submit_date'] }}</td>
+                                <td>{{ row['problem_desc'] }}</td>
+                                <td>{{ row['proposal_desc'] }}</td>
+                                <td>{{ row['part_nos'] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- /Pending Requests Panel -->
+
+        <!-- Pending Orders Panel -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Pending Orders</h4>
+            </div>
+            <div class="panel-body">
+                <div class="table table-responsive">
+                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
+                        <thead>
+                        <tr>
+                            <th data-sortable="true" data-align="center">ID</th>
+                            <th data-sortable="false" data-align="left">Document</th>
+                            <th data-sortable="false" data-align="left">Notes</th>
+                            <th data-sortable="true" data-align="center">Due Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {# TODO: add class="danger" for past due orders #}
+                        {% for row in ord_results %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['doc_change_id']) }}">{{ row['doc_change_id'] }}</a>
+                                </td>
+                                <td>{{ row['document_name'] }}</td>
+                                <td>{{ row['notes'] }}</td>
+                                <td>{{ row['due_date'] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- /Pending Orders Panel -->
+
+        <!-- Pending Notices Panel -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Pending Notices</h4>
+            </div>
+            <div class="panel-body">
+                <div class="table table-striped table-responsive">
+                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
+                        <thead>
+                        <tr>
+                            <th data-sortable="true" data-align="center">ID</th>
+                            <th data-sortable="true" data-align="center">Proposed Implementation Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {# TODO: add class="danger" for past due notices #}
+                        {% for row in ntc_results %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
+                                </td>
+                                <td>{{ row['proposed_implement_date'] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> <!-- /Pending Notices Panel -->
+{% endblock %}

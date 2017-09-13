@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a19d2574-0afa-4bc2-935a-d2277b16047c" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/doc_change.db" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/android-chrome-192x192.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/android-chrome-512x512.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/apple-touch-icon.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/favicon-16x16.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/favicon-32x32.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/favicon.ico" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/favicons.zip" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.eot" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.ttf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.woff" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.woff2" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/images/gear_logo.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/images/logo.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/mstile-150x150.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/doc_change.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/schema.sql" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/browserconfig.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap-table.min.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap-theme.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap-theme.css.map" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap-theme.min.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap-theme.min.css.map" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap.css.map" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap.min.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/bootstrap.min.css.map" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/crt.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/ie10-viewport-bug-workaround.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/css/style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/fonts/glyphicons-halflings-regular.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/js/bootstrap-table.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/js/bootstrap.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/js/bootstrap.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/js/ie10-viewport-bug-workaround.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/js/jquery-3.2.1.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/js/npm.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/manifest.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/safari-pinned-tab.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/401.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/404.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/405.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/500.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/_formhelpers.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/add_doc_change.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/dashboard.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/doc_change.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/edit_profile.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/edit_users.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/layout-error.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/layout.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/login.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/register_user.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/start.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/view_all.html" />
+    </list>
+    <ignored path=".idea/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/doc_change$doc_change.coverage" NAME="doc_change Coverage Results" MODIFIED="1505251237703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_TABLE_DETAILS" value="true" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <expand />
+    <select />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="doc_change.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/doc_change.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="51">
+              <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+              <folding>
+                <element signature="e#372#381#0" expanded="true" />
+                <marker date="1505251608694" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
+                <marker date="1505251608694" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
+                <marker date="1505251608694" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
+                <marker date="1505251608694" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
+                <marker date="1505251608694" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505251608694" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
+                <marker date="1505251608694" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505251608694" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505251608694" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
+                <marker date="1505251608694" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505251608694" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505251608694" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505251608694" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
+                <marker date="1505251608694" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
+                <marker date="1505251608694" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
+                <marker date="1505251608694" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
+                <marker date="1505251608694" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
+                <marker date="1505251608694" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
+                <marker date="1505251608694" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
+                <marker date="1505251608694" expanded="true" signature="27993:28268" ph="UPDATE [affe... " />
+                <marker date="1505251608694" expanded="true" signature="28933:29037" ph="DELETE FROM " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dashboard.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="318">
+              <caret line="99" column="72" lean-forward="false" selection-start-line="99" selection-start-column="72" selection-end-line="99" selection-end-column="72" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="doc_change.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/doc_change.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="522">
+              <caret line="302" column="95" lean-forward="false" selection-start-line="302" selection-start-column="95" selection-end-line="302" selection-end-column="95" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Flask Main" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>/user/</find>
+      <find>login</find>
+      <find>%</find>
+      <find>hash</find>
+      <find>url_for('user</find>
+      <find>url_for('</find>
+      <find>url_for('user')</find>
+      <find>change</find>
+      <find>query =</find>
+      <find>status</find>
+      <find>name</find>
+      <find>'order'</find>
+      <find>register</find>
+      <find>DocChangeRequestForm</find>
+      <find># request.method == 'GET'</find>
+      <find>strftime</find>
+      <find>strf</find>
+      <find>print</find>
+      <find>return redirect</find>
+      <find>align</find>
+      <find>panel</find>
+      <find>methods</find>
+      <find>methods=</find>
+      <find>New</find>
+      <find>Actions</find>
+      <find>Add Part No</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/templates/user.html" />
+        <option value="$PROJECT_DIR$/templates/_formhelpers.html" />
+        <option value="$PROJECT_DIR$/templates/start.html" />
+        <option value="$PROJECT_DIR$/schema.sql" />
+        <option value="$PROJECT_DIR$/templates/edit_users.html" />
+        <option value="$PROJECT_DIR$/templates/edit_profile.html" />
+        <option value="$PROJECT_DIR$/templates/register_user.html" />
+        <option value="$PROJECT_DIR$/templates/add_doc_change.html" />
+        <option value="$PROJECT_DIR$/templates/layout-error.html" />
+        <option value="$PROJECT_DIR$/templates/view_all.html" />
+        <option value="$PROJECT_DIR$/static/css/style.css" />
+        <option value="$PROJECT_DIR$/static/css/crt.css" />
+        <option value="$PROJECT_DIR$/templates/login.html" />
+        <option value="$PROJECT_DIR$/templates/layout.html" />
+        <option value="$PROJECT_DIR$/templates/doc_change.html" />
+        <option value="$PROJECT_DIR$/templates/dashboard.html" />
+        <option value="$PROJECT_DIR$/doc_change.py" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1912" />
+    <option name="y" value="-128" />
+    <option name="width" value="1936" />
+    <option name="height" value="1216" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Python</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="doc_change" type="b2602c69:ProjectViewProjectNode" />
+              <item name="doc_change" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="doc_change" type="b2602c69:ProjectViewProjectNode" />
+              <item name="doc_change" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="doc_change" type="b2602c69:ProjectViewProjectNode" />
+              <item name="doc_change" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+              <item name="css" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="doc_change" type="b2602c69:ProjectViewProjectNode" />
+              <item name="doc_change" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$USER_HOME$/AppData/Local/Continuum/Anaconda3/envs/doc_change/python.exe" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="doc_change" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="doc_change" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\MDaleo\PycharmProjects\doc_change\templates" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.doc_change">
+    <configuration name="doc_change" type="PythonConfigurationType" factoryName="Python" singleton="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="doc_change" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/doc_change.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="StructuralSearchPlugin">
+    <searchConfiguration name="user defined" created="1504813463025" text="url_for('user')" recursive="true" caseInsensitive="true" type="ActionScript" history="1" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a19d2574-0afa-4bc2-935a-d2277b16047c" name="Default" comment="" />
+      <created>1504720514152</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1504720514152</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="1912" y="-128" width="1936" height="1216" extended-state="6" />
+    <layout>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="DB Browser" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="DB Execution Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26279318" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="2" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/doc_change.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9299">
+          <caret line="557" column="107" lean-forward="false" selection-start-line="557" selection-start-column="107" selection-end-line="557" selection-end-column="107" />
+          <folding>
+            <element signature="e#372#381#0" expanded="true" />
+            <marker date="1505251608694" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
+            <marker date="1505251608694" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
+            <marker date="1505251608694" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
+            <marker date="1505251608694" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
+            <marker date="1505251608694" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505251608694" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505251608694" expanded="true" signature="27993:28268" ph="UPDATE [affe... " />
+            <marker date="1505251608694" expanded="true" signature="28933:29037" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/view_all.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="28" column="49" lean-forward="false" selection-start-line="28" selection-start-column="49" selection-end-line="28" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/_formhelpers.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="34" lean-forward="false" selection-start-line="5" selection-start-column="34" selection-end-line="5" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/layout.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1105">
+          <caret line="65" column="78" lean-forward="false" selection-start-line="65" selection-start-column="78" selection-end-line="65" selection-end-column="78" />
+          <folding>
+            <marker date="1505250639903" expanded="true" signature="6446:6456" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/doc_change.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="867">
+          <caret line="51" column="52" lean-forward="false" selection-start-line="51" selection-start-column="52" selection-end-line="51" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc_change.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#372#381#0" expanded="true" />
+            <marker date="1505251608694" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
+            <marker date="1505251608694" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
+            <marker date="1505251608694" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
+            <marker date="1505251608694" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
+            <marker date="1505251608694" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505251608694" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505251608694" expanded="true" signature="27993:28268" ph="UPDATE [affe... " />
+            <marker date="1505251608694" expanded="true" signature="28933:29037" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/_formhelpers.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="34" lean-forward="true" selection-start-line="5" selection-start-column="34" selection-end-line="5" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/add_doc_change.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="14" lean-forward="true" selection-start-line="5" selection-start-column="14" selection-end-line="5" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/layout.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="16" lean-forward="false" selection-start-line="17" selection-start-column="16" selection-end-line="17" selection-end-column="16" />
+          <folding>
+            <marker date="1505250639903" expanded="true" signature="6446:6456" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc_change.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#372#381#0" expanded="true" />
+            <marker date="1505251608694" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
+            <marker date="1505251608694" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
+            <marker date="1505251608694" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
+            <marker date="1505251608694" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
+            <marker date="1505251608694" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505251608694" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505251608694" expanded="true" signature="27993:28268" ph="UPDATE [affe... " />
+            <marker date="1505251608694" expanded="true" signature="28933:29037" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/layout.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1547">
+          <caret line="91" column="29" lean-forward="false" selection-start-line="91" selection-start-column="29" selection-end-line="91" selection-end-column="29" />
+          <folding>
+            <marker date="1505250639903" expanded="true" signature="6446:6456" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc_change.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#372#381#0" expanded="true" />
+            <marker date="1505251608694" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
+            <marker date="1505251608694" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
+            <marker date="1505251608694" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
+            <marker date="1505251608694" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
+            <marker date="1505251608694" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505251608694" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505251608694" expanded="true" signature="27993:28268" ph="UPDATE [affe... " />
+            <marker date="1505251608694" expanded="true" signature="28933:29037" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/layout.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1547">
+          <caret line="91" column="29" lean-forward="false" selection-start-line="91" selection-start-column="29" selection-end-line="91" selection-end-column="29" />
+          <folding>
+            <marker date="1505250639903" expanded="true" signature="6446:6456" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc_change.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#372#381#0" expanded="true" />
+            <marker date="1505251608694" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
+            <marker date="1505251608694" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
+            <marker date="1505251608694" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
+            <marker date="1505251608694" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
+            <marker date="1505251608694" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505251608694" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505251608694" expanded="true" signature="27993:28268" ph="UPDATE [affe... " />
+            <marker date="1505251608694" expanded="true" signature="28933:29037" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/layout.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1547">
+          <caret line="91" column="29" lean-forward="false" selection-start-line="91" selection-start-column="29" selection-end-line="91" selection-end-column="29" />
+          <folding>
+            <marker date="1505250639903" expanded="true" signature="6446:6456" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/register_user_beforeWTF.html" />
+    <entry file="file://$PROJECT_DIR$/templates/start.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Anaconda3/envs/doc_change/Lib/site-packages/flask/_compat.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="232">
+          <caret line="32" column="0" lean-forward="false" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/schema.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="11" lean-forward="false" selection-start-line="17" selection-start-column="11" selection-end-line="17" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/edit_users.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="14" lean-forward="true" selection-start-line="5" selection-start-column="14" selection-end-line="5" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/edit_profile.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="24" lean-forward="false" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2017.2/system/python_stubs/1450537883/_sqlite3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="232">
+          <caret line="169" column="8" lean-forward="false" selection-start-line="169" selection-start-column="8" selection-end-line="169" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/add_doc_change.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="14" lean-forward="false" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/layout-error.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="16" lean-forward="false" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/_formhelpers.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="34" lean-forward="false" selection-start-line="5" selection-start-column="34" selection-end-line="5" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/view_all.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="28" column="49" lean-forward="false" selection-start-line="28" selection-start-column="49" selection-end-line="28" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/css/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/register_user.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="82" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="82" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/css/crt.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="267" column="10" lean-forward="false" selection-start-line="267" selection-start-column="10" selection-end-line="267" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="62" lean-forward="false" selection-start-line="9" selection-start-column="62" selection-end-line="9" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/layout.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1505250639903" expanded="true" signature="6446:6456" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/doc_change.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="522">
+          <caret line="302" column="95" lean-forward="false" selection-start-line="302" selection-start-column="95" selection-end-line="302" selection-end-column="95" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="318">
+          <caret line="99" column="72" lean-forward="false" selection-start-line="99" selection-start-column="72" selection-end-line="99" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/safari-pinned-tab.svg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitattributes">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc_change.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding>
+            <element signature="e#372#381#0" expanded="true" />
+            <marker date="1505251608694" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
+            <marker date="1505251608694" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
+            <marker date="1505251608694" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
+            <marker date="1505251608694" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505251608694" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
+            <marker date="1505251608694" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
+            <marker date="1505251608694" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
+            <marker date="1505251608694" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
+            <marker date="1505251608694" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505251608694" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505251608694" expanded="true" signature="27993:28268" ph="UPDATE [affe... " />
+            <marker date="1505251608694" expanded="true" signature="28933:29037" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

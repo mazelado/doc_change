@@ -1,0 +1,317 @@
+{% extends 'layout.html' %}
+{% block body %}
+    <div class="container">
+        {% if error %}
+            <div class="alert alert-danger">
+                <p><strong>Error:</strong> {{ error }}</p>
+            </div>
+        {% endif %}
+        {% from "_formhelpers.html" import render_field %}
+        {% if doc_change_id == 0 %}
+            <h2 class="form-heading">Add a New Document Change</h2>
+        {% else %}
+            <h2 class="form-heading">Document Change {{ doc_change_id }}</h2>
+        {% endif %}
+        <!-- Problem Panel -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Problem Description</h4>
+            </div>
+            <div class="panel-body">
+                {% if doc_change_id == 0 %}
+                    <form action="{{ url_for('insert_doc_change') }}" method=post>
+                {% else %}
+                    <form action="{{ url_for('update_doc_change', doc_change_id=doc_change_id) }}" method=post>
+                    {{ render_field(doc_change_form.status, class='form-control') }}
+                    {{ render_field(doc_change_form.submit_by, class='form-control') }}
+                    {{ render_field(doc_change_form.submit_date, class='form-control') }}
+                {% endif %}
+                {{ render_field(doc_change_form.problem_desc, class='form-control') }}
+                {{ render_field(doc_change_form.proposal_desc, class='form-control') }}
+                {{ render_field(doc_change_form.proposed_implement_date, class='form-control') }}
+                {% if doc_change_id == 0 %}
+                {% else %}
+                    {{ render_field(doc_change_form.actual_implement_date, class='form-control') }}
+                {% endif %}
+                <button class="btn btn-primary btn-lg btn-block pull-right" type="submit" value="Save">
+                    <span class="glyphicon glyphicon-save"></span> Save Changes
+                </button>
+                </form>
+            </div>
+        </div> <!-- /Problem Panel -->
+
+        {% if doc_change_id == 0 %}
+        {% else %}
+            <!-- Affected Parts Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Affected Part Numbers</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="table table-responsive">
+                        <table data-toggle="table" data-search="true" data-show-columns="true">
+                            <thead>
+                            <tr>
+                                <th data-visible="false">ID</th>
+                                <th data-visible="false">Doc Change ID</th>
+                                <th data-sortable="true" data-align="left">Part No</th>
+                                <th data-sortable="true" data-align="center">Rev</th>
+                                <th data-sortable="true" data-align="left">Routing</th>
+                                <th data-sortable="false" data-align="left">Description</th>
+                                <th data-sortable="false" data-align="center">Actions</th>
+                                {# TODO: Fix layout so buttons are always on one line #}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for row in affected_parts_rows %}
+                                <tr>
+                                    <td>{{ row['id'] }}</td>
+                                    <td>{{ row['doc_change_id'] }}</td>
+                                    <td>{{ row['part_no'] }}</td>
+                                    <td>{{ row['revision'] }}</td>
+                                    <td>{{ row['routing'] }}</td>
+                                    <td>{{ row['description'] }}</td>
+                                    <td>
+                                        <button class="btn btn-primary" data-toggle="modal"
+                                                data-target="#AffectedPartsModal">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </button>
+                                        <form method="post"
+                                              action="{{ url_for('delete_affected_part_no', row_id=row['id'], doc_change_id=row['doc_change_id']) }}">
+                                            <button class="btn btn-danger" type="submit" value="{{ row['id'] }}">
+                                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <br>
+                        <button class="btn btn-primary pull-right" data-toggle="modal"
+                                data-target="#AffectedPartsModal">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Add Part No
+                        </button>
+
+                        <!-- Affected Parts Modal Window -->
+                        {# TODO: Populate modal form when clicking the Edit button #}
+                        {# https://getbootstrap.com/docs/3.3/javascript/#modals-related-target #}
+                        <div class="modal fade" id="AffectedPartsModal" tabindex="-1" role="dialog"
+                             aria-labelledby="AffectedPartsModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <form action="{{ url_for('insert_affected_part_no') }}" method=post>
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h4 class="modal-title" id="AffectedPartsModalLabel">Add Affected Part
+                                                No</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ render_field(doc_change_affected_parts_form.doc_change_id, class='form-control') }}
+                                            {{ render_field(doc_change_affected_parts_form.part_no, class='form-control') }}
+                                            {{ render_field(doc_change_affected_parts_form.desc, class='form-control') }}
+                                            {{ render_field(doc_change_affected_parts_form.rev, class='form-control') }}
+                                            {{ render_field(doc_change_affected_parts_form.routing, class='form-control') }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                                <span class="glyphicon glyphicon-remove"></span> Close
+                                            </button>
+                                            <button class="btn btn-primary" type="submit" value="Login">
+                                                <span class="glyphicon glyphicon-save"></span> Save Changes
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div> <!-- /Affected Parts Modal Window -->
+
+                    </div>
+                </div>
+            </div> <!-- /Affected Parts Panel -->
+
+            <!-- Request / Order / Notice Panel Group -->
+            <div class="panel-group" id="accordion">
+
+                <!-- Request Panel -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">1. Request</a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <div class="table table-responsive">
+                                <table data-toggle="table" data-search="true" data-show-columns="true">
+                                    <thead>
+                                    <tr>
+                                        <th data-sortable="true" data-align="left">Name</th>
+                                        <th data-sortable="true" data-align="left">Email Address</th>
+                                        <th data-sortable="true" data-align="center">Status</th>
+                                        <th data-sortable="false" data-align="center">Sent Date</th>
+                                        <th data-sortable="false" data-align="center">Approval Date</th>
+                                        <th data-sortable="false" data-align="left">Notes</th>
+                                        <th data-sortable="false" data-align="center">Actions</th>
+                                        {# TODO: Fix layout so buttons are always on one line #}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for row in request_rows %}
+                                        <tr>
+                                            <td>{{ row['stakeholder_name'] }}</td>
+                                            <td>{{ row['stakeholder_email'] }}</td>
+                                            <td>{{ row['status'] }}</td>
+                                            {# Need a way to select status from list #}
+                                            <td>{{ row['sent_date'] }}</td>
+                                            <td>{{ row['approval_date'] }}</td>
+                                            <td>{{ row['notes'] }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" data-toggle="modal"
+                                                        data-target="#RequestModal">
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </button>
+                                                <button class="btn btn-danger">
+                                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <br>
+                                <button class="btn btn-default pull-right" type="button" value="SendRequest">
+                                    <span class="glyphicon glyphicon-send"></span> Send Requests
+                                </button>
+                                <button class="btn btn-primary pull-right" type="submit" value="AddToRequest">
+                                    <span class="glyphicon glyphicon-plus-sign"></span> Add Stakeholder
+                                </button>
+                                {# modal add window #}
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- /Request Panel -->
+
+                <!-- Order Panel -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">2. Order</a>
+                        </h4>
+                    </div>
+                    <div id="collapse2" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="table table-responsive">
+                                <table data-toggle="table" data-search="true" data-show-columns="true">
+                                    <thead>
+                                    <tr>
+                                        <th data-sortable="true" data-align="left">Document</th>
+                                        <th data-sortable="false" data-align="left">Notes</th>
+                                        <th data-sortable="true" data-align="left">Name</th>
+                                        <th data-sortable="true" data-align="left">Email Address</th>
+                                        <th data-sortable="true" data-align="center">Due Date</th>
+                                        <th data-sortable="false" data-align="center">Sent Date</th>
+                                        <th data-sortable="false" data-align="center">Completed Date</th>
+                                        <th data-sortable="false" data-align="center">New Rev</th>
+                                        <th data-sortable="false" data-align="center">Actions</th>
+                                        {# TODO: Fix layout so buttons are always on one line #}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for row in order_rows %}
+                                        <tr>
+                                            <td>{{ row['document_name'] }}</td>
+                                            <td>{{ row['notes'] }}</td>
+                                            <td>{{ row['responsible_name'] }}</td>
+                                            <td>{{ row['responsible_email'] }}</td>
+                                            <td>{{ row['due_date'] }}</td>
+                                            <td>{{ row['sent_date'] }}</td>
+                                            <td>{{ row['completed_date'] }}</td>
+                                            <td>{{ row['new_revision'] }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" data-toggle="modal"
+                                                        data-target="#OrderModal">
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </button>
+                                                <button class="btn btn-danger">
+                                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <br>
+                                <button class="btn btn-default pull-right" type="button" value="SendRequest">
+                                    <span class="glyphicon glyphicon-send"></span> Send Orders
+                                </button>
+                                <button class="btn btn-primary pull-right" type="submit" value="AddToOrder">
+                                    <span class="glyphicon glyphicon-plus-sign"></span> Add Document
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- /Order Panel -->
+
+                <!-- Notice Panel -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">3. Notice</a>
+                        </h4>
+                    </div>
+                    <div id="collapse3" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="table table-responsive">
+                                <table data-toggle="table" data-search="true" data-show-columns="true">
+                                    <thead>
+                                    <tr>
+                                        <th data-sortable="true" data-align="left">Name</th>
+                                        <th data-sortable="true" data-align="left">Email Address</th>
+                                        <th data-sortable="false" data-align="center">Sent Date</th>
+                                        <th data-sortable="false" data-align="center">Approval Date</th>
+                                        <th data-sortable="false" data-align="left">Notes</th>
+                                        <th data-sortable="false" data-align="center">Actions</th>
+                                        {# TODO: Fix layout so buttons are always on one line #}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for row in notice_rows %}
+                                        <tr>
+                                            <td>{{ row['authorize_name'] }}</td>
+                                            <td>{{ row['authorize_email'] }}</td>
+                                            <td>{{ row['sent_date'] }}</td>
+                                            <td>{{ row['authorize_date'] }}</td>
+                                            <td>{{ row['notes'] }}</td>
+                                            <td>
+                                                <button class="btn btn-primary" data-toggle="modal"
+                                                        data-target="#NoticeModal">
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </button>
+                                                <button class="btn btn-danger">
+                                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <br>
+                                <button class="btn btn-default pull-right" type="button" value="SendRequest">
+                                    <span class="glyphicon glyphicon-send"></span> Send Notices
+                                </button>
+                                <button class="btn btn-primary pull-right" type="submit" value="AddToNotice">
+                                    <span class="glyphicon glyphicon-plus-sign"></span> Add Authorization
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- /Notice Panel -->
+
+            </div> <!-- /Request / Order / Notice Panel Group -->
+
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class="container">
+    {% if error %}
+    <div class="alert alert-danger">
+        <p><strong>Error:</strong> {{ error }}</p>
+    </div>
+    {% endif %}
+    {% from "_formhelpers.html" import render_field %}
+    <form action="{{ url_for('add_doc_change') }}" method=post>
+        {% if new_doc_change %}
+        <h2 class="form-heading">Add a New Document Change</h2>
+        {% endif %}
+        {{ render_field(doc_change_form.proposed_implement_date, class='form-control') }}
+        {{ render_field(doc_change_form.problem_desc, class='form-control') }}
+        {{ render_field(doc_change_form.proposal_desc, class='form-control') }}
+        <button class="btn btn-lg btn-primary btn-block" type="submit" value="Login">Continue</button>
+    </form>
+</div>
+{% endblock %}

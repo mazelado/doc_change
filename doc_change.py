@@ -8,14 +8,13 @@
 import os
 import sqlite3
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from flask import Flask, request, render_template, session, g, redirect, url_for, abort, flash
 from flask_wtf import FlaskForm
 from passlib.context import CryptContext
-from wtforms import StringField, PasswordField, DateField, TextAreaField, IntegerField, HiddenField
+from wtforms import StringField, PasswordField, DateField, TextAreaField, HiddenField
 from wtforms.validators import DataRequired, Length, EqualTo, Email
-from wtforms.widgets import TextArea
 
 # Flask setup
 app = Flask(__name__)
@@ -175,7 +174,7 @@ def do_login():
             first_name_from_db = rows[2]
             last_name_from_db = rows[3]
 
-        if len(rows) == 0 or pwd_context.verify(password_from_form, hash_from_db) == False:
+        if len(rows) == 0 or pwd_context.verify(password_from_form, hash_from_db) is False:
             error = 'Invalid username or password.'
         else:
             session['logged_in'] = True
@@ -291,7 +290,7 @@ def insert_user():
         email = form.email.data
         first_name = form.first_name.data
         last_name = form.last_name.data
-        hash = pwd_context.hash(form.password.data)
+        pwd_hash = pwd_context.hash(form.password.data)
 
         db = get_db()
         # Check if user already exists
@@ -316,7 +315,7 @@ def insert_user():
                         [password])
                         VALUES (?, ?, ?, ?, ?);
                     """
-            args = [username, email, first_name, last_name, hash]
+            args = [username, email, first_name, last_name, pwd_hash]
             db.execute(query, args)
             db.commit()
 
@@ -673,8 +672,6 @@ def insert_doc_change():
     error = None
 
     doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
-    doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False)
-    doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
 
     # Check permissions
     if not session['logged_in'] or not session['can_add_doc']:
@@ -723,7 +720,38 @@ def update_doc_change(doc_change_id):
     :return:
     """
 
-    return 'Update Document Change {}'.format(doc_change_id)
+    error = None
+
+    doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
+
+    # Check permissions
+    if not session['logged_in'] or not session['can_add_doc']:
+        abort(401)
+
+    if doc_change_form.validate_on_submit():
+        problem_desc = doc_change_form.problem_desc.data
+        proposal_desc = doc_change_form.proposal_desc.data
+        proposed_implement_date = doc_change_form.proposed_implement_date.data
+
+        # Update doc change
+        db = get_db()
+        query = """
+                UPDATE
+                    [doc_changes]
+                SET
+                    [problem_desc] = ?, 
+                    [proposal_desc] = ?, 
+                    [proposed_implement_date] = ?
+                WHERE
+                    [doc_changes].[id] = ?;
+                """
+        args = [problem_desc, proposal_desc, proposed_implement_date, doc_change_id]
+        db.execute(query, args)
+        db.commit()
+
+        flash('Document Change was successfully updated.')
+
+    return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/add_affected_part_no/', methods=['POST'])
@@ -775,7 +803,7 @@ def update_affected_part_no():
     doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
 
     # Save all form data to variables
-    id = doc_change_affected_parts_form.id.data
+    row_id = doc_change_affected_parts_form.id.data
     doc_change_id = doc_change_affected_parts_form.doc_change_id.data
     part_no = doc_change_affected_parts_form.part_no.data
     desc = doc_change_affected_parts_form.desc.data
@@ -800,7 +828,7 @@ def update_affected_part_no():
                 WHERE
                     [affected_parts].[id] = ?;
                 """
-        args = [part_no, desc, rev, routing, id]
+        args = [part_no, desc, rev, routing, row_id]
         db.execute(query, args)
         db.commit()
 

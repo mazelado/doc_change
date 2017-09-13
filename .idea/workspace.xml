@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="a19d2574-0afa-4bc2-935a-d2277b16047c" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc_change.db" afterPath="$PROJECT_DIR$/doc_change.db" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc_change.py" afterPath="$PROJECT_DIR$/doc_change.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/_formhelpers.html" afterPath="$PROJECT_DIR$/templates/_formhelpers.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/doc_change.html" afterPath="$PROJECT_DIR$/templates/doc_change.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/layout.html" afterPath="$PROJECT_DIR$/templates/layout.html" />
     </list>
     <ignored path=".idea/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,7 +19,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/doc_change$doc_change.coverage" NAME="doc_change Coverage Results" MODIFIED="1505316251581" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/doc_change$doc_change.coverage" NAME="doc_change Coverage Results" MODIFIED="1505322530816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -33,54 +34,45 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="doc_change.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="doc_change.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/doc_change.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1117">
-              <caret line="767" column="55" lean-forward="false" selection-start-line="767" selection-start-column="55" selection-end-line="767" selection-end-column="55" />
+            <state relative-caret-position="377">
+              <caret line="747" column="84" lean-forward="false" selection-start-line="747" selection-start-column="84" selection-end-line="747" selection-end-column="84" />
               <folding>
                 <element signature="e#372#381#0" expanded="true" />
-                <marker date="1505315899152" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
-                <marker date="1505315899152" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
-                <marker date="1505315899152" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
-                <marker date="1505315899152" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
-                <marker date="1505315899152" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
-                <marker date="1505315899152" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
-                <marker date="1505315899152" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
-                <marker date="1505315899152" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
-                <marker date="1505315899152" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
-                <marker date="1505315899152" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
-                <marker date="1505315899152" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
-                <marker date="1505315899152" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
-                <marker date="1505315899152" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
-                <marker date="1505315899152" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
-                <marker date="1505315899152" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
-                <marker date="1505315899152" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
-                <marker date="1505315899152" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
-                <marker date="1505315899152" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
-                <marker date="1505315899152" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
-                <marker date="1505315899152" expanded="true" signature="28011:28286" ph="UPDATE [affe... " />
-                <marker date="1505315899152" expanded="true" signature="28951:29055" ph="DELETE FROM " />
+                <marker date="1505322524394" expanded="true" signature="4575:4780" ph="SELECT [user... users" />
+                <marker date="1505322524394" expanded="true" signature="5484:5948" ph="SELECT [can_... users" />
+                <marker date="1505322524394" expanded="true" signature="9440:9526" ph="SELECT [user... users" />
+                <marker date="1505322524394" expanded="true" signature="9768:10019" ph="INSERT INTO [users]... " />
+                <marker date="1505322524394" expanded="true" signature="11255:11892" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505322524394" expanded="true" signature="12037:12434" ph="SELECT [orde... order" />
+                <marker date="1505322524394" expanded="true" signature="12576:12931" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505322524394" expanded="true" signature="13626:14205" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505322524394" expanded="true" signature="14335:14676" ph="SELECT [orde... order" />
+                <marker date="1505322524394" expanded="true" signature="14803:15103" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505322524394" expanded="true" signature="15749:16388" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505322524394" expanded="true" signature="19251:19820" ph="SELECT [doc_... doc_changes" />
+                <marker date="1505322524394" expanded="true" signature="20153:20292" ph="SELECT [affe... affected_parts" />
+                <marker date="1505322524394" expanded="true" signature="20153:20550" ph="SELECT [affe... affected_parts" />
+                <marker date="1505322524394" expanded="true" signature="20723:21191" ph="SELECT [requ... request" />
+                <marker date="1505322524394" expanded="true" signature="21355:22001" ph="SELECT [orde... order" />
+                <marker date="1505322524394" expanded="true" signature="22164:22611" ph="SELECT [noti... notice" />
+                <marker date="1505322524394" expanded="true" signature="24548:24873" ph="INSERT INTO [doc_changes]... " />
+                <marker date="1505322524394" expanded="true" signature="26043:26301" ph="UPDATE [doc_... " />
+                <marker date="1505322524394" expanded="true" signature="27457:27699" ph="INSERT INTO [affected_parts]... " />
+                <marker date="1505322524394" expanded="true" signature="28808:29083" ph="UPDATE [affe... " />
+                <marker date="1505322524394" expanded="true" signature="29752:29856" ph="DELETE FROM " />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dashboard.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="99" column="72" lean-forward="false" selection-start-line="99" selection-start-column="72" selection-end-line="99" selection-end-column="72" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="doc_change.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="doc_change.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/doc_change.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="479">
-              <caret line="343" column="53" lean-forward="true" selection-start-line="343" selection-start-column="53" selection-end-line="343" selection-end-column="53" />
+            <state relative-caret-position="425">
+              <caret line="25" column="80" lean-forward="false" selection-start-line="25" selection-start-column="80" selection-end-line="25" selection-end-column="80" />
               <folding />
             </state>
           </provider>
@@ -146,9 +138,16 @@
       <find>New</find>
       <find>Actions</find>
       <find>Add Part No</find>
+      <find>doc_change_id</find>
+      <find>request.</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="mazelado &lt;azdaleo@gmail.com&gt;" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
@@ -169,8 +168,8 @@
         <option value="$PROJECT_DIR$/templates/dashboard.html" />
         <option value="$PROJECT_DIR$/templates/layout.html" />
         <option value="$PROJECT_DIR$/templates/_formhelpers.html" />
-        <option value="$PROJECT_DIR$/doc_change.py" />
         <option value="$PROJECT_DIR$/templates/doc_change.html" />
+        <option value="$PROJECT_DIR$/doc_change.py" />
       </list>
     </option>
   </component>
@@ -254,6 +253,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -314,6 +314,14 @@
       <option name="presentableId" value="Default" />
       <updated>1504720514152</updated>
     </task>
+    <task id="LOCAL-00001" summary="Implement edit Affected Parts button">
+      <created>1505318041321</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1505318041322</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TodoView">
@@ -337,6 +345,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26279318" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -357,6 +366,10 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Implement edit Affected Parts button" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement edit Affected Parts button" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <option name="time" value="2" />
@@ -370,27 +383,28 @@
           <caret line="557" column="107" lean-forward="false" selection-start-line="557" selection-start-column="107" selection-end-line="557" selection-end-column="107" />
           <folding>
             <element signature="e#372#381#0" expanded="true" />
-            <marker date="1505315899152" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
-            <marker date="1505315899152" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
-            <marker date="1505315899152" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
-            <marker date="1505315899152" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
-            <marker date="1505315899152" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
-            <marker date="1505315899152" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
-            <marker date="1505315899152" expanded="true" signature="28011:28286" ph="UPDATE [affe... " />
-            <marker date="1505315899152" expanded="true" signature="28951:29055" ph="DELETE FROM " />
+            <marker date="1505322524394" expanded="true" signature="4575:4780" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="5484:5948" ph="SELECT [can_... users" />
+            <marker date="1505322524394" expanded="true" signature="9440:9526" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="9768:10019" ph="INSERT INTO [users]... " />
+            <marker date="1505322524394" expanded="true" signature="11255:11892" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="12037:12434" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="12576:12931" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="13626:14205" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="14335:14676" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="14803:15103" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="15749:16388" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="19251:19820" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="20153:20292" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20153:20550" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20723:21191" ph="SELECT [requ... request" />
+            <marker date="1505322524394" expanded="true" signature="21355:22001" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="22164:22611" ph="SELECT [noti... notice" />
+            <marker date="1505322524394" expanded="true" signature="24548:24873" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505322524394" expanded="true" signature="26043:26301" ph="UPDATE [doc_... " />
+            <marker date="1505322524394" expanded="true" signature="27457:27699" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505322524394" expanded="true" signature="28808:29083" ph="UPDATE [affe... " />
+            <marker date="1505322524394" expanded="true" signature="29752:29856" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>
@@ -435,27 +449,28 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#372#381#0" expanded="true" />
-            <marker date="1505315899152" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
-            <marker date="1505315899152" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
-            <marker date="1505315899152" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
-            <marker date="1505315899152" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
-            <marker date="1505315899152" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
-            <marker date="1505315899152" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
-            <marker date="1505315899152" expanded="true" signature="28011:28286" ph="UPDATE [affe... " />
-            <marker date="1505315899152" expanded="true" signature="28951:29055" ph="DELETE FROM " />
+            <marker date="1505322524394" expanded="true" signature="4575:4780" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="5484:5948" ph="SELECT [can_... users" />
+            <marker date="1505322524394" expanded="true" signature="9440:9526" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="9768:10019" ph="INSERT INTO [users]... " />
+            <marker date="1505322524394" expanded="true" signature="11255:11892" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="12037:12434" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="12576:12931" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="13626:14205" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="14335:14676" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="14803:15103" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="15749:16388" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="19251:19820" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="20153:20292" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20153:20550" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20723:21191" ph="SELECT [requ... request" />
+            <marker date="1505322524394" expanded="true" signature="21355:22001" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="22164:22611" ph="SELECT [noti... notice" />
+            <marker date="1505322524394" expanded="true" signature="24548:24873" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505322524394" expanded="true" signature="26043:26301" ph="UPDATE [doc_... " />
+            <marker date="1505322524394" expanded="true" signature="27457:27699" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505322524394" expanded="true" signature="28808:29083" ph="UPDATE [affe... " />
+            <marker date="1505322524394" expanded="true" signature="29752:29856" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>
@@ -492,27 +507,28 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#372#381#0" expanded="true" />
-            <marker date="1505315899152" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
-            <marker date="1505315899152" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
-            <marker date="1505315899152" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
-            <marker date="1505315899152" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
-            <marker date="1505315899152" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
-            <marker date="1505315899152" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
-            <marker date="1505315899152" expanded="true" signature="28011:28286" ph="UPDATE [affe... " />
-            <marker date="1505315899152" expanded="true" signature="28951:29055" ph="DELETE FROM " />
+            <marker date="1505322524394" expanded="true" signature="4575:4780" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="5484:5948" ph="SELECT [can_... users" />
+            <marker date="1505322524394" expanded="true" signature="9440:9526" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="9768:10019" ph="INSERT INTO [users]... " />
+            <marker date="1505322524394" expanded="true" signature="11255:11892" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="12037:12434" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="12576:12931" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="13626:14205" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="14335:14676" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="14803:15103" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="15749:16388" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="19251:19820" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="20153:20292" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20153:20550" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20723:21191" ph="SELECT [requ... request" />
+            <marker date="1505322524394" expanded="true" signature="21355:22001" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="22164:22611" ph="SELECT [noti... notice" />
+            <marker date="1505322524394" expanded="true" signature="24548:24873" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505322524394" expanded="true" signature="26043:26301" ph="UPDATE [doc_... " />
+            <marker date="1505322524394" expanded="true" signature="27457:27699" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505322524394" expanded="true" signature="28808:29083" ph="UPDATE [affe... " />
+            <marker date="1505322524394" expanded="true" signature="29752:29856" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>
@@ -533,27 +549,28 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#372#381#0" expanded="true" />
-            <marker date="1505315899152" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
-            <marker date="1505315899152" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
-            <marker date="1505315899152" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
-            <marker date="1505315899152" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
-            <marker date="1505315899152" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
-            <marker date="1505315899152" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
-            <marker date="1505315899152" expanded="true" signature="28011:28286" ph="UPDATE [affe... " />
-            <marker date="1505315899152" expanded="true" signature="28951:29055" ph="DELETE FROM " />
+            <marker date="1505322524394" expanded="true" signature="4575:4780" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="5484:5948" ph="SELECT [can_... users" />
+            <marker date="1505322524394" expanded="true" signature="9440:9526" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="9768:10019" ph="INSERT INTO [users]... " />
+            <marker date="1505322524394" expanded="true" signature="11255:11892" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="12037:12434" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="12576:12931" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="13626:14205" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="14335:14676" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="14803:15103" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="15749:16388" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="19251:19820" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="20153:20292" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20153:20550" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20723:21191" ph="SELECT [requ... request" />
+            <marker date="1505322524394" expanded="true" signature="21355:22001" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="22164:22611" ph="SELECT [noti... notice" />
+            <marker date="1505322524394" expanded="true" signature="24548:24873" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505322524394" expanded="true" signature="26043:26301" ph="UPDATE [doc_... " />
+            <marker date="1505322524394" expanded="true" signature="27457:27699" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505322524394" expanded="true" signature="28808:29083" ph="UPDATE [affe... " />
+            <marker date="1505322524394" expanded="true" signature="29752:29856" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>
@@ -574,27 +591,28 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#372#381#0" expanded="true" />
-            <marker date="1505315899152" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
-            <marker date="1505315899152" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
-            <marker date="1505315899152" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
-            <marker date="1505315899152" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
-            <marker date="1505315899152" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
-            <marker date="1505315899152" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
-            <marker date="1505315899152" expanded="true" signature="28011:28286" ph="UPDATE [affe... " />
-            <marker date="1505315899152" expanded="true" signature="28951:29055" ph="DELETE FROM " />
+            <marker date="1505322524394" expanded="true" signature="4575:4780" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="5484:5948" ph="SELECT [can_... users" />
+            <marker date="1505322524394" expanded="true" signature="9440:9526" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="9768:10019" ph="INSERT INTO [users]... " />
+            <marker date="1505322524394" expanded="true" signature="11255:11892" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="12037:12434" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="12576:12931" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="13626:14205" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="14335:14676" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="14803:15103" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="15749:16388" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="19251:19820" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="20153:20292" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20153:20550" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20723:21191" ph="SELECT [requ... request" />
+            <marker date="1505322524394" expanded="true" signature="21355:22001" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="22164:22611" ph="SELECT [noti... notice" />
+            <marker date="1505322524394" expanded="true" signature="24548:24873" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505322524394" expanded="true" signature="26043:26301" ph="UPDATE [doc_... " />
+            <marker date="1505322524394" expanded="true" signature="27457:27699" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505322524394" expanded="true" signature="28808:29083" ph="UPDATE [affe... " />
+            <marker date="1505322524394" expanded="true" signature="29752:29856" ph="DELETE FROM " />
           </folding>
         </state>
       </provider>
@@ -758,42 +776,43 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/doc_change.py">
+    <entry file="file://$PROJECT_DIR$/templates/doc_change.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1117">
-          <caret line="767" column="55" lean-forward="false" selection-start-line="767" selection-start-column="55" selection-end-line="767" selection-end-column="55" />
-          <folding>
-            <element signature="e#372#381#0" expanded="true" />
-            <marker date="1505315899152" expanded="true" signature="4637:4842" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="5546:6010" ph="SELECT [can_... users" />
-            <marker date="1505315899152" expanded="true" signature="9498:9584" ph="SELECT [user... users" />
-            <marker date="1505315899152" expanded="true" signature="9826:10077" ph="INSERT INTO [users]... " />
-            <marker date="1505315899152" expanded="true" signature="11309:11946" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="12091:12488" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="12630:12985" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="13680:14259" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="14389:14730" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="14857:15157" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="15803:16442" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="19305:19874" ph="SELECT [doc_... doc_changes" />
-            <marker date="1505315899152" expanded="true" signature="20207:20346" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20207:20604" ph="SELECT [affe... affected_parts" />
-            <marker date="1505315899152" expanded="true" signature="20777:21245" ph="SELECT [requ... request" />
-            <marker date="1505315899152" expanded="true" signature="21409:22055" ph="SELECT [orde... order" />
-            <marker date="1505315899152" expanded="true" signature="22218:22665" ph="SELECT [noti... notice" />
-            <marker date="1505315899152" expanded="true" signature="24785:25110" ph="INSERT INTO [doc_changes]... " />
-            <marker date="1505315899152" expanded="true" signature="26664:26906" ph="INSERT INTO [affected_parts]... " />
-            <marker date="1505315899152" expanded="true" signature="28011:28286" ph="UPDATE [affe... " />
-            <marker date="1505315899152" expanded="true" signature="28951:29055" ph="DELETE FROM " />
-          </folding>
+        <state relative-caret-position="425">
+          <caret line="25" column="80" lean-forward="false" selection-start-line="25" selection-start-column="80" selection-end-line="25" selection-end-column="80" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/doc_change.html">
+    <entry file="file://$PROJECT_DIR$/doc_change.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="479">
-          <caret line="343" column="53" lean-forward="true" selection-start-line="343" selection-start-column="53" selection-end-line="343" selection-end-column="53" />
-          <folding />
+        <state relative-caret-position="377">
+          <caret line="747" column="84" lean-forward="false" selection-start-line="747" selection-start-column="84" selection-end-line="747" selection-end-column="84" />
+          <folding>
+            <element signature="e#372#381#0" expanded="true" />
+            <marker date="1505322524394" expanded="true" signature="4575:4780" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="5484:5948" ph="SELECT [can_... users" />
+            <marker date="1505322524394" expanded="true" signature="9440:9526" ph="SELECT [user... users" />
+            <marker date="1505322524394" expanded="true" signature="9768:10019" ph="INSERT INTO [users]... " />
+            <marker date="1505322524394" expanded="true" signature="11255:11892" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="12037:12434" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="12576:12931" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="13626:14205" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="14335:14676" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="14803:15103" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="15749:16388" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="19251:19820" ph="SELECT [doc_... doc_changes" />
+            <marker date="1505322524394" expanded="true" signature="20153:20292" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20153:20550" ph="SELECT [affe... affected_parts" />
+            <marker date="1505322524394" expanded="true" signature="20723:21191" ph="SELECT [requ... request" />
+            <marker date="1505322524394" expanded="true" signature="21355:22001" ph="SELECT [orde... order" />
+            <marker date="1505322524394" expanded="true" signature="22164:22611" ph="SELECT [noti... notice" />
+            <marker date="1505322524394" expanded="true" signature="24548:24873" ph="INSERT INTO [doc_changes]... " />
+            <marker date="1505322524394" expanded="true" signature="26043:26301" ph="UPDATE [doc_... " />
+            <marker date="1505322524394" expanded="true" signature="27457:27699" ph="INSERT INTO [affected_parts]... " />
+            <marker date="1505322524394" expanded="true" signature="28808:29083" ph="UPDATE [affe... " />
+            <marker date="1505322524394" expanded="true" signature="29752:29856" ph="DELETE FROM " />
+          </folding>
         </state>
       </provider>
     </entry>

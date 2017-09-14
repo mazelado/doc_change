@@ -7,6 +7,7 @@
             </div>
         {% endif %}
         {% from "_formhelpers.html" import render_field %}
+        {% from "_formhelpers.html" import render_datepicker %}
         {% if doc_change_id == 0 %}
             <h2 class="form-heading">Add a New Document Change</h2>
         {% else %}
@@ -30,7 +31,7 @@
                 {% endif %}
                 {{ render_field(doc_change_form.problem_desc, class='form-control') }}
                 {{ render_field(doc_change_form.proposal_desc, class='form-control') }}
-                {{ render_field(doc_change_form.proposed_implement_date, class='form-control') }}
+                {{ render_datepicker(doc_change_form.proposed_implement_date, class='form-control') }}
                 {% if doc_change_id == 0 %}
                 {% else %}
                     {{ render_field(doc_change_form.actual_implement_date, class='form-control') }}
@@ -66,8 +67,8 @@
                                 <th data-sortable="true" data-align="center">Rev</th>
                                 <th data-sortable="true" data-align="left">Routing</th>
                                 <th data-sortable="false" data-align="left">Description</th>
-                                <th data-sortable="false" data-align="center">Actions</th>
-                                {# TODO: Fix layout so buttons are always on one line #}
+                                <th data-sortable="false" data-align="center">Edit</th>
+                                <th data-sortable="false" data-align="center">Delete</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -90,6 +91,8 @@
                                                 data-description="{{ row['description'] }}">
                                             <span class="glyphicon glyphicon-pencil"></span>
                                         </button>
+                                    </td>
+                                    <td>
                                         <form method="post"
                                               action="{{ url_for('delete_affected_part_no', row_id=row['id'], doc_change_id=row['doc_change_id']) }}">
                                             <button class="btn btn-danger" type="submit" value="{{ row['id'] }}">
@@ -170,8 +173,8 @@
                                         <th data-sortable="false" data-align="center">Sent Date</th>
                                         <th data-sortable="false" data-align="center">Approval Date</th>
                                         <th data-sortable="false" data-align="left">Notes</th>
-                                        <th data-sortable="false" data-align="center">Actions</th>
-                                        {# TODO: Fix layout so buttons are always on one line #}
+                                        <th data-sortable="false" data-align="center">Edit</th>
+                                        <th data-sortable="false" data-align="center">Delete</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -182,7 +185,6 @@
                                             <td>{{ row['stakeholder_name'] }}</td>
                                             <td>{{ row['stakeholder_email'] }}</td>
                                             <td>{{ row['status'] }}</td>
-                                            {# Need a way to select status from list #}
                                             <td>{{ row['sent_date'] }}</td>
                                             <td>{{ row['approval_date'] }}</td>
                                             <td>{{ row['notes'] }}</td>
@@ -191,11 +193,13 @@
                                                         data-target="#RequestModal"
                                                         data-row_id="{{ row['id'] }}"
                                                         data-doc_change_id="{{ row['doc_change_id'] }}"
-                                                        data-name="{{ row['stakeholder_name'] }}"
-                                                        data-email="{{ row['stakeholder_email'] }}"
+                                                        data-stakeholder_name="{{ row['stakeholder_name'] }}"
+                                                        data-stakeholder_email="{{ row['stakeholder_email'] }}"
                                                         data-notes="{{ row['notes'] }}">
                                                     <span class="glyphicon glyphicon-pencil"></span>
                                                 </button>
+                                            </td>
+                                            <td>
                                                 <form method="post"
                                                       action="{{ url_for('delete_request', row_id=row['id'], doc_change_id=row['doc_change_id']) }}">
                                                     <button class="btn btn-danger" type="submit"
@@ -210,17 +214,17 @@
                                 </table>
                                 <br>
                                 {# TODO: Implement Promote button #}
-                                {# TODO: Implement Send button to email stakeholders #}
+                                {# TODO: Implement Send button #}
                                 <div class="btn-group pull-right">
-                                    <button class="btn btn-default" type="button" value="PromoteRequest" disabled>
-                                        <span class="glyphicon glyphicon-send"></span> Promote to Order
+                                    <button class="btn btn-primary" type="submit" value="Add"
+                                            data-toggle="modal" data-target="#RequestModal">
+                                        <span class="glyphicon glyphicon-plus-sign"></span> Add a Stakeholder
                                     </button>
                                     <button class="btn btn-default" type="button" value="SendRequest" disabled>
                                         <span class="glyphicon glyphicon-send"></span> Email Requests
                                     </button>
-                                    <button class="btn btn-primary" type="submit" value="Add"
-                                            data-toggle="modal" data-target="#RequestModal">
-                                        <span class="glyphicon glyphicon-plus-sign"></span> Add Stakeholder
+                                    <button class="btn btn-default" type="button" value="PromoteRequest" disabled>
+                                        <span class="glyphicon glyphicon-share-alt"></span> Promote to Order
                                     </button>
                                 </div>
                             </div>
@@ -241,8 +245,8 @@
                                             <div class="modal-body">
                                                 {{ render_field(doc_change_request_form.id, class='form-control') }}
                                                 {{ render_field(doc_change_request_form.doc_change_id, class='form-control') }}
-                                                {{ render_field(doc_change_request_form.name, class='form-control') }}
-                                                {{ render_field(doc_change_request_form.email, class='form-control') }}
+                                                {{ render_field(doc_change_request_form.stakeholder_name, class='form-control') }}
+                                                {{ render_field(doc_change_request_form.stakeholder_email, class='form-control') }}
                                                 {{ render_field(doc_change_request_form.notes, class='form-control') }}
                                             </div>
                                             <div class="modal-footer">
@@ -276,6 +280,8 @@
                                 <table data-toggle="table" data-search="true" data-show-columns="true">
                                     <thead>
                                     <tr>
+                                        <th data-visible="false">ID</th>
+                                        <th data-visible="false">Document Change ID</th>
                                         <th data-sortable="true" data-align="left">Document</th>
                                         <th data-sortable="false" data-align="left">Notes</th>
                                         <th data-sortable="true" data-align="left">Name</th>
@@ -284,13 +290,15 @@
                                         <th data-sortable="false" data-align="center">Sent Date</th>
                                         <th data-sortable="false" data-align="center">Completed Date</th>
                                         <th data-sortable="false" data-align="center">New Rev</th>
-                                        <th data-sortable="false" data-align="center">Actions</th>
-                                        {# TODO: Fix layout so buttons are always on one line #}
+                                        <th data-sortable="false" data-align="center">Edit</th>
+                                        <th data-sortable="false" data-align="center">Delete</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for row in order_rows %}
                                         <tr>
+                                            <td>{{ row['id'] }}</td>
+                                            <td>{{ row['doc_change_id'] }}</td>
                                             <td>{{ row['document_name'] }}</td>
                                             <td>{{ row['notes'] }}</td>
                                             <td>{{ row['responsible_name'] }}</td>
@@ -300,26 +308,85 @@
                                             <td>{{ row['completed_date'] }}</td>
                                             <td>{{ row['new_revision'] }}</td>
                                             <td>
-                                                <button class="btn btn-primary" data-toggle="modal"
-                                                        data-target="#OrderModal">
+                                                <button class="btn btn-primary" value="Edit" data-toggle="modal"
+                                                        data-target="#OrderModal"
+                                                        data-row_id="{{ row['id'] }}"
+                                                        data-doc_change_id="{{ row['doc_change_id'] }}"
+                                                        data-document_type_id="{{ row['document_type_id'] }}"
+                                                        data-notes="{{ row['notes'] }}"
+                                                        data-responsible_name="{{ row['responsible_name'] }}"
+                                                        data-responsible_email="{{ row['responsible_email'] }}"
+                                                        data-due_date="{{ row['due_date'] }}"
+                                                        data-new_revision="{{ row['new_revision'] }}">
                                                     <span class="glyphicon glyphicon-pencil"></span>
                                                 </button>
-                                                <button class="btn btn-danger">
-                                                    <span class="glyphicon glyphicon-remove-circle"></span>
-                                                </button>
+                                            </td>
+                                            <td>
+                                                <form method="post"
+                                                      action="{{ url_for('delete_order', row_id=row['id'], doc_change_id=row['doc_change_id']) }}">
+                                                    <button class="btn btn-danger" type="submit"
+                                                            value="{{ row['id'] }}">
+                                                        <span class="glyphicon glyphicon-remove-circle"></span>
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
                                 </table>
                                 <br>
-                                <button class="btn btn-default pull-right" type="button" value="SendRequest">
-                                    <span class="glyphicon glyphicon-send"></span> Send Orders
-                                </button>
-                                <button class="btn btn-primary pull-right" type="submit" value="AddToOrder">
-                                    <span class="glyphicon glyphicon-plus-sign"></span> Add Document
-                                </button>
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-primary" type="submit" value="Add" data-toggle="modal"
+                                            data-target="#OrderModal">
+                                        <span class="glyphicon glyphicon-plus-sign"></span> Add an Order
+                                    </button>
+                                    {# TODO: Implement Promote button #}
+                                    {# TODO: Implement Send button #}
+                                    <button class="btn btn-default" type="button" value="SendOrder" disabled>
+                                        <span class="glyphicon glyphicon-send"></span> Email Orders
+                                    </button>
+                                    <button class="btn btn-default" type="button" value="PromoteOrder" disabled>
+                                        <span class="glyphicon glyphicon-share-alt"></span> Promote to Notice
+                                    </button>
+                                </div>
                             </div>
+
+                            <!-- Order Modal Window -->
+                            <div class="modal fade" id="OrderModal" tabindex="-1" role="dialog"
+                                 aria-labelledby="OrderModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <form action="{{ url_for('insert_order') }}" method=post>
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h4 class="modal-title" id="OrderModalLabel">Add Order</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{ render_field(doc_change_order_form.id, class='form-control') }}
+                                                {{ render_field(doc_change_order_form.doc_change_id, class='form-control') }}
+                                                {{ render_field(doc_change_order_form.document_type_id, class='form-control') }}
+                                                {{ render_field(doc_change_order_form.responsible_name, class='form-control') }}
+                                                {{ render_field(doc_change_order_form.responsible_email, class='form-control') }}
+                                                {{ render_datepicker(doc_change_order_form.due_date, class='form-control') }}
+                                                {{ render_field(doc_change_order_form.new_revision, class='form-control') }}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" id="close"
+                                                        data-dismiss="modal">
+                                                    <span class="glyphicon glyphicon-remove"></span> Close
+                                                </button>
+                                                <button class="btn btn-primary" type="submit" id="save">
+                                                    <span class="glyphicon glyphicon-save"></span> Save Changes
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div> <!-- /Order Modal Window -->
+
                         </div>
                     </div>
                 </div> <!-- /Order Panel -->
@@ -342,8 +409,8 @@
                                         <th data-sortable="false" data-align="center">Sent Date</th>
                                         <th data-sortable="false" data-align="center">Approval Date</th>
                                         <th data-sortable="false" data-align="left">Notes</th>
-                                        <th data-sortable="false" data-align="center">Actions</th>
-                                        {# TODO: Fix layout so buttons are always on one line #}
+                                        <th data-sortable="false" data-align="center">Edit</th>
+                                        <th data-sortable="false" data-align="center">Delete</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -359,6 +426,8 @@
                                                         data-target="#NoticeModal">
                                                     <span class="glyphicon glyphicon-pencil"></span>
                                                 </button>
+                                            </td>
+                                            <td>
                                                 <button class="btn btn-danger">
                                                     <span class="glyphicon glyphicon-remove-circle"></span>
                                                 </button>
@@ -368,13 +437,56 @@
                                     </tbody>
                                 </table>
                                 <br>
-                                <button class="btn btn-default pull-right" type="button" value="SendRequest">
-                                    <span class="glyphicon glyphicon-send"></span> Send Notices
-                                </button>
-                                <button class="btn btn-primary pull-right" type="submit" value="AddToNotice">
-                                    <span class="glyphicon glyphicon-plus-sign"></span> Add Authorization
-                                </button>
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-primary" type="submit" value="Add" data-toggle="modal"
+                                            data-target="#NoticeModal">
+                                        <span class="glyphicon glyphicon-plus-sign"></span> Add an Authorization
+                                    </button>
+                                    {# TODO: Implement Complete button #}
+                                    {# TODO: Implement Send button #}
+                                    <button class="btn btn-default" type="button" value="SendNotice" disabled>
+                                        <span class="glyphicon glyphicon-send"></span> Email Notices
+                                    </button>
+                                    <button class="btn btn-default" type="button" value="SendNotice" disabled>
+                                        <span class="glyphicon glyphicon-share-alt"></span> Promote to Completed
+                                    </button>
+                                </div>
                             </div>
+
+                            <!-- Notice Modal Window -->
+                            <div class="modal fade" id="NoticeModal" tabindex="-1" role="dialog"
+                                 aria-labelledby="NoticeModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <form action="{{ url_for('insert_notice') }}" method=post>
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h4 class="modal-title" id="NoticeModalLabel">Add Authorization</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{ render_field(doc_change_request_form.id, class='form-control') }}
+                                                {{ render_field(doc_change_request_form.doc_change_id, class='form-control') }}
+                                                {{ render_field(doc_change_request_form.stakeholder_name, class='form-control') }}
+                                                {{ render_field(doc_change_request_form.stakeholder_email, class='form-control') }}
+                                                {{ render_field(doc_change_request_form.notes, class='form-control') }}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" id="close"
+                                                        data-dismiss="modal">
+                                                    <span class="glyphicon glyphicon-remove"></span> Close
+                                                </button>
+                                                <button class="btn btn-primary" type="submit" id="save">
+                                                    <span class="glyphicon glyphicon-save"></span> Save Changes
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div> <!-- /Notice Modal Window -->
+
                         </div>
                     </div>
                 </div> <!-- /Notice Panel -->
@@ -387,6 +499,14 @@
 
 {% block js %}
     <script>
+        // Date Picker
+        $('.datepicker').datepicker({
+            format: "m/d/yyyy",
+            todayBtn: "linked",
+            autoclose: true,
+            todayHighlight: true
+        });
+
         // Populate Affected Parts Modal when edit button is clicked
         $('#AffectedPartsModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
@@ -454,8 +574,8 @@
                 // Get data from button
                 var row_id = button.data('row_id');
                 var doc_change_id = button.data('doc_change_id');
-                var name = button.data('name');
-                var email = button.data('email');
+                var stakeholder_name = button.data('stakeholder_name');
+                var stakeholder_email = button.data('stakeholder_email');
                 var status = button.data('status');
                 var sent_date = button.data('sent_date');
                 var approval_date = button.data('approval_date');
@@ -464,8 +584,8 @@
                 // Populate fields
                 modal.find('.modal-body #id').val(row_id);
                 modal.find('.modal-body #doc_change_id').val(doc_change_id);
-                modal.find('.modal-body #name').val(name);
-                modal.find('.modal-body #email').val(email);
+                modal.find('.modal-body #stakeholder_name').val(stakeholder_name);
+                modal.find('.modal-body #stakeholder_email').val(stakeholder_email);
                 modal.find('.modal-body #status').val(status);
                 modal.find('.modal-body #sent_date').val(sent_date);
                 modal.find('.modal-body #approval_date').val(approval_date);
@@ -487,6 +607,115 @@
                 modal.find('.modal-body #status').val("");
                 modal.find('.modal-body #sent_date').val("");
                 modal.find('.modal-body #approval_date').val("");
+                modal.find('.modal-body #notes').val("");
+            }
+        });
+
+        // Populate Orders Modal when edit button is clicked
+        $('#OrderModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+
+            if (button.val() === "Edit") {
+                // Change form action to UPDATE
+                modal.find('.modal-content form').attr("action", "{{ url_for('update_order') }}");
+
+                // Change title
+                modal.find('.modal-header #OrderModalLabel').html("Edit Order");
+
+                // Change save button text
+                modal.find('.modal-footer #save').html("<span class=\"glyphicon glyphicon-save\"></span> Update");
+
+                // Get data from button
+                var row_id = button.data('row_id');
+                var doc_change_id = button.data('doc_change_id');
+                var document_type_id = button.data('document_type_id');
+                var notes = button.data('notes');
+                var responsible_name = button.data('responsible_name');
+                var responsible_email = button.data('responsible_email');
+                var due_date = button.data('due_date');
+                var sent_date = button.data('sent_date');
+                var completed_date = button.data('completed_date');
+                var new_revision = button.data('new_revision');
+
+                // Populate fields
+                modal.find('.modal-body #id').val(row_id);
+                modal.find('.modal-body #doc_change_id').val(doc_change_id);
+                modal.find('.modal-body #document_type_id').val(document_type_id);
+                modal.find('.modal-body #notes').val(notes);
+                modal.find('.modal-body #responsible_name').val(responsible_name);
+                modal.find('.modal-body #responsible_email').val(responsible_email);
+                modal.find('.modal-body #due_date').val(due_date);
+                modal.find('.modal-body #sent_date').val(sent_date);
+                modal.find('.modal-body #completed_date').val(completed_date);
+                modal.find('.modal-body #new_revision').val(new_revision);
+            } else if (button.val() === "Add") {
+                // Change form action to INSERT
+                modal.find('.modal-content form').attr("action", "{{ url_for('insert_order') }}");
+
+                // Change title
+                modal.find('.modal-header #OrderModalLabel').html("Add Order");
+
+                // Change save button text
+                modal.find('.modal-footer #save').html("<span class=\"glyphicon glyphicon-save\"></span> Add")
+
+                // Clear fields
+                modal.find('.modal-body #id').val("");
+                modal.find('.modal-body #document_type_id').val("");
+                modal.find('.modal-body #notes').val("");
+                modal.find('.modal-body #responsible_name').val("");
+                modal.find('.modal-body #responsible_email').val("");
+                modal.find('.modal-body #due_date').val("");
+                modal.find('.modal-body #sent_date').val("");
+                modal.find('.modal-body #completed_date').val("");
+                modal.find('.modal-body #new_revision').val("");
+            }
+        });
+
+        // Populate Notices Modal when edit button is clicked
+        $('#NoticeModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+
+            if (button.val() === "Edit") {
+                // Change form action to UPDATE
+                modal.find('.modal-content form').attr("action", "{{ url_for('update_notice') }}");
+
+                // Change title
+                modal.find('.modal-header #NoticeModalLabel').html("Edit Authorization");
+
+                // Change save button text
+                modal.find('.modal-footer #save').html("<span class=\"glyphicon glyphicon-save\"></span> Update");
+
+                // Get data from button
+                var row_id = button.data('row_id');
+                var doc_change_id = button.data('doc_change_id');
+                var authorize_name = button.data('authorize_name');
+                var authorize_email = button.data('authorize_email');
+                var sent_date = button.data('sent_date');
+                var authorize_date = button.data('authorize_date');
+                var notes = button.data('notes');
+
+                // Populate fields
+                modal.find('.modal-body #id').val(row_id);
+                modal.find('.modal-body #doc_change_id').val(doc_change_id);
+                modal.find('.modal-body #authorize_name').val(authorize_name);
+                modal.find('.modal-body #authorize_email').val(authorize_email);
+                modal.find('.modal-body #notes').val(notes);
+            } else if (button.val() === "Add") {
+                // Change form action to INSERT
+                modal.find('.modal-content form').attr("action", "{{ url_for('insert_notice') }}");
+
+                // Change title
+                modal.find('.modal-header #NoticeModalLabel').html("Add Authorization");
+
+                // Change save button text
+                modal.find('.modal-footer #save').html("<span class=\"glyphicon glyphicon-save\"></span> Add")
+
+                // Clear fields
+                modal.find('.modal-body #id').val("");
+                modal.find('.modal-body #authorize_name').val("");
+                modal.find('.modal-body #authorize_email').val("");
                 modal.find('.modal-body #notes').val("");
             }
         })

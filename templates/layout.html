@@ -18,6 +18,9 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 
+    <!-- Bootstrap Datepicker CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-datepicker3.css') }}">
+
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ie10-viewport-bug-workaround.css') }}">
 
@@ -130,6 +133,8 @@
 <script src="{{ url_for('static', filename='js/ie10-viewport-bug-workaround.js') }}"></script>
 <!-- Bootstrap Table JavaScript -->
 <script src="{{ url_for('static', filename='js/bootstrap-table.min.js') }}"></script>
+<!-- Bootstrap Datepicker JavaScript -->
+<script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}"></script>
 <!-- Custom JavaScript -->
 {% block js %}{% endblock %}
 <!-- /Custom JavaScript -->

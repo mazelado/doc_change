@@ -14,7 +14,7 @@ from datetime import datetime
 from flask import Flask, request, render_template, session, g, redirect, url_for, abort, flash
 from flask_wtf import FlaskForm
 from passlib.context import CryptContext
-from wtforms import StringField, PasswordField, DateField, TextAreaField, HiddenField
+from wtforms import StringField, PasswordField, TextAreaField, HiddenField, SelectField, DateField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, Optional
 
 # Flask setup
@@ -86,6 +86,10 @@ def close_db(error):
 def flash_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
+            print('Error in the %s field - %s' % (
+                getattr(form, field).label.text,
+                error
+            ), file=sys.stderr)
             flash(u"Error in the %s field - %s" % (
                 getattr(form, field).label.text,
                 error
@@ -514,7 +518,8 @@ def show_all_doc_changes():
 
 
 class DocChangeForm(FlaskForm):
-    id = HiddenField('Affected Part ID')
+    id = HiddenField('Row ID')
+    status_id = SelectField('Status ID', coerce=int)
     status = StringField('Status', render_kw={'readonly': True})
     submit_by = StringField('Submit By', render_kw={'readonly': True})
     submit_date = StringField('Submit Date', render_kw={'readonly': True})
@@ -526,7 +531,7 @@ class DocChangeForm(FlaskForm):
 
 
 class DocChangeAffectedPartsForm(FlaskForm):
-    id = HiddenField('Affected Part ID')
+    id = HiddenField('Row ID')
     doc_change_id = HiddenField('Document Change ID')
     part_no = StringField('Part No', validators=[DataRequired()])
     rev = StringField('Revision')
@@ -535,13 +540,38 @@ class DocChangeAffectedPartsForm(FlaskForm):
 
 
 class DocChangeRequestForm(FlaskForm):
-    id = HiddenField('Affected Part ID')
+    id = HiddenField('Row ID')
     doc_change_id = HiddenField('Document Change ID')
-    name = StringField('Name', validators=[DataRequired(), Length(min=2)])
-    email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
+    stakeholder_name = StringField('Name', validators=[DataRequired(), Length(min=2)])
+    stakeholder_email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
+    status_id = SelectField('Status', coerce=int)
     status = StringField('Status')
-    sent_date = DateField('Date Sent', validators=[Optional()])
-    approval_date = DateField('Date Approved', validators=[Optional()])
+    sent_date = StringField('Date Sent', validators=[Optional()])
+    approval_date = StringField('Date Approved', validators=[Optional()])
+    notes = TextAreaField('Notes')
+
+
+class DocChangeOrderForm(FlaskForm):
+    id = HiddenField('Row ID')
+    doc_change_id = HiddenField('Document Change ID')
+    document_type_id = SelectField('Document Type', coerce=int)
+    document_name = StringField('Document Name')
+    notes = TextAreaField('Notes')
+    responsible_name = StringField('Name', validators=[DataRequired(), Length(min=2)])
+    responsible_email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
+    due_date = StringField('Due Date', validators=[DataRequired()])
+    sent_date = StringField('Sent Date')
+    completed_date = StringField('Completed Date')
+    new_revision = StringField('New Revision')
+
+
+class DocChangeNoticeForm(FlaskForm):
+    id = HiddenField('Row ID')
+    doc_change_id = HiddenField('Document Change ID')
+    authorize_name = StringField('Name', validators=[DataRequired(), Length(min=2)])
+    authorize_email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
+    sent_date = StringField('Sent Date', validators=[Optional()])
+    authorize_date = StringField('Authorized Date', validators=[Optional()])
     notes = TextAreaField('Notes')
 
 
@@ -565,6 +595,8 @@ def show_doc_change(doc_change_id=0):
     doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False,
                                                                 doc_change_id=doc_change_id)
     doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
+    doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
+    doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
 
     # TODO Add date control to Proposed Implement Date field (https://uxsolutions.github.io/bootstrap-datepicker/)
     if doc_change_id == 0:  # New Doc Change
@@ -626,7 +658,8 @@ def show_doc_change(doc_change_id=0):
         # Get Orders from DB
         query = """
                 SELECT [order].[id], 
-                       [order].[doc_change_id], 
+                       [order].[doc_change_id],
+                       [order].[document_type_id], 
                        [document_types].[document_name], 
                        [order].[notes], 
                        [order].[responsible_name], 
@@ -641,6 +674,18 @@ def show_doc_change(doc_change_id=0):
                 """
         args = [doc_change_id]
         order_rows = query_db(query, args)
+
+        # Get Document Types from DB
+        query = """
+                SELECT [document_types].[id], 
+                       [document_types].[document_name]
+                FROM   [document_types]
+                ORDER  BY [document_types].[document_name];
+                """
+        args = []
+        order_document_types = query_db(query, args)
+        doc_change_order_form.document_type_id.choices = [(row['id'], row['document_name']) for row in
+                                                          order_document_types]
 
         # Get Notices from DB
         query = """
@@ -667,12 +712,18 @@ def show_doc_change(doc_change_id=0):
         doc_change_form.proposed_implement_date.data = doc_change_row['proposed_implement_date']
         doc_change_form.actual_implement_date.data = doc_change_row['actual_implement_date']
 
-        return render_template('doc_change.html', error=error, doc_change_id=doc_change_id,
+        return render_template('doc_change.html',
+                               error=error,
+                               doc_change_id=doc_change_id,
                                doc_change_form=doc_change_form,
                                doc_change_affected_parts_form=doc_change_affected_parts_form,
                                doc_change_request_form=doc_change_request_form,
-                               affected_parts_rows=affected_parts_rows, request_rows=request_rows,
-                               order_rows=order_rows, notice_rows=notice_rows)
+                               doc_change_order_form=doc_change_order_form,
+                               doc_change_notice_form=doc_change_notice_form,
+                               affected_parts_rows=affected_parts_rows,
+                               request_rows=request_rows,
+                               order_rows=order_rows,
+                               notice_rows=notice_rows)
 
 
 @app.route('/insert_doc_change/', methods=['POST'])
@@ -720,7 +771,7 @@ def insert_doc_change():
 
         db.commit()
 
-        flash('New Document Change was successfully added.')
+        flash('Document Change {} was successfully added.'.format(doc_change_id))
 
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
@@ -763,7 +814,7 @@ def update_doc_change(doc_change_id):
         db.execute(query, args)
         db.commit()
 
-        flash('Document Change was successfully updated.')
+        flash('Document Change {} was successfully updated.'.format(doc_change_id))
 
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
@@ -775,11 +826,12 @@ def insert_affected_part_no():
 
     :return:
     """
+    error = None
+
     doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
 
     # Save all form data to variables
     doc_change_id = doc_change_affected_parts_form.doc_change_id.data
-    print('doc_change_id = {}'.format(doc_change_id), file=sys.stderr)
     part_no = doc_change_affected_parts_form.part_no.data
     desc = doc_change_affected_parts_form.desc.data
     rev = doc_change_affected_parts_form.rev.data
@@ -805,7 +857,9 @@ def insert_affected_part_no():
         db.execute(query, args)
         db.commit()
 
-    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
+        flash('Part number {} was successfully added.'.format(part_no))
+
+    return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/edit_affected_part_no/', methods=['POST'])
@@ -877,6 +931,8 @@ def delete_affected_part_no(row_id):
     db.execute(query, args)
     db.commit()
 
+    flash('Part was successfully deleted.')
+
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
@@ -893,8 +949,8 @@ def insert_request():
 
     # Save all form data to variables
     doc_change_id = doc_change_requests_form.doc_change_id.data
-    name = doc_change_requests_form.name.data
-    email = doc_change_requests_form.email.data
+    stakeholder_name = doc_change_requests_form.stakeholder_name.data
+    stakeholder_email = doc_change_requests_form.email.data
     status_id = 1
     notes = doc_change_requests_form.notes.data
 
@@ -914,9 +970,11 @@ def insert_request():
                     [notes])
                     VALUES (?, ?, ?, ?, ?);
                 """
-        args = [doc_change_id, name, email, status_id, notes]
+        args = [doc_change_id, stakeholder_name, stakeholder_email, status_id, notes]
         db.execute(query, args)
         db.commit()
+
+        flash('Request stakeholder {} was successfully added.'.format(stakeholder_name))
 
     # flash_errors(doc_change_requests_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
@@ -934,7 +992,7 @@ def update_request():
     # Save all form data to variables
     row_id = doc_change_request_form.id.data
     doc_change_id = doc_change_request_form.doc_change_id.data
-    stakeholder_name = doc_change_request_form.name.data
+    stakeholder_name = doc_change_request_form.stakeholder_name.data
     stakeholder_email = doc_change_request_form.email.data
     notes = doc_change_request_form.notes.data
 
@@ -958,6 +1016,8 @@ def update_request():
         args = [stakeholder_name, stakeholder_email, notes, row_id]
         db.execute(query, args)
         db.commit()
+
+        flash('Request stakeholder {} was successfully updated.'.format(stakeholder_name))
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
@@ -989,6 +1049,8 @@ def delete_request(row_id):
     db.execute(query, args)
     db.commit()
 
+    flash('Request was successfully deleted.')
+
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
@@ -999,7 +1061,57 @@ def insert_order():
 
     :return:
     """
-    pass
+    error = None
+
+    doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False)
+
+    # Get Document Types from DB
+    query = """
+            SELECT [document_types].[id], 
+                   [document_types].[document_name]
+            FROM   [document_types]
+            ORDER  BY [document_types].[document_name];
+            """
+    args = []
+    order_document_types = query_db(query, args)
+    doc_change_order_form.document_type_id.choices = [(row['id'], row['document_name']) for row in
+                                                      order_document_types]
+
+    # Save all form data to variables
+    doc_change_id = doc_change_order_form.doc_change_id.data
+    document_type_id = doc_change_order_form.document_type_id.data
+    notes = doc_change_order_form.notes.data
+    responsible_name = doc_change_order_form.responsible_name.data
+    responsible_email = doc_change_order_form.responsible_email.data
+    due_date = doc_change_order_form.due_date.data
+    new_revision = doc_change_order_form.new_revision.data
+
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    if doc_change_order_form.validate_on_submit():
+        # Insert data into DB
+        db = get_db()
+        query = """
+                INSERT INTO [order]
+                    ([doc_change_id],
+                    [document_type_id],
+                    [notes], 
+                    [responsible_name], 
+                    [responsible_email], 
+                    [due_date],
+                    [new_revision])
+                    VALUES (?, ?, ?, ?, ?, ?, ?);
+                """
+        args = [doc_change_id, document_type_id, notes, responsible_name, responsible_email, due_date, new_revision]
+        db.execute(query, args)
+        db.commit()
+
+        flash('Order was successfully added.')
+
+    flash_errors(doc_change_order_form)
+    return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/update_order/', methods=['POST'])
@@ -1009,7 +1121,58 @@ def update_order():
 
     :return:
     """
-    pass
+    doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False)
+
+    # Get Document Types from DB
+    query = """
+            SELECT [document_types].[id], 
+                   [document_types].[document_name]
+            FROM   [document_types]
+            ORDER  BY [document_types].[document_name];
+            """
+    args = []
+    order_document_types = query_db(query, args)
+    doc_change_order_form.document_type_id.choices = [(row['id'], row['document_name']) for row in
+                                                      order_document_types]
+
+    # Save all form data to variables
+    row_id = doc_change_order_form.id.data
+    doc_change_id = doc_change_order_form.doc_change_id.data
+    document_type_id = doc_change_order_form.document_type_id.data
+    notes = doc_change_order_form.notes.data
+    responsible_name = doc_change_order_form.responsible_name.data
+    responsible_email = doc_change_order_form.responsible_email.data
+    due_date = doc_change_order_form.due_date.data
+    new_revision = doc_change_order_form.new_revision.data
+
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    if doc_change_order_form.validate_on_submit():
+        # Update data in DB
+        db = get_db()
+        query = """
+                UPDATE
+                    [order]
+                SET
+                    [document_type_id] = ?,
+                    [notes] = ?,
+                    [responsible_name] = ?,
+                    [responsible_email] = ?,
+                    [due_date] = ?,
+                    [new_revision] = ?
+                WHERE
+                    [order].[id] = ?;
+                """
+        args = [document_type_id, notes, responsible_name, responsible_email, due_date, new_revision, row_id]
+        db.execute(query, args)
+        db.commit()
+
+        flash('Order was successfully updated.')
+
+    flash_errors(doc_change_order_form)
+    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 @app.route('/delete_order/<int:row_id>', methods=['POST'])
@@ -1020,7 +1183,28 @@ def delete_order(row_id):
     :param row_id:
     :return:
     """
-    pass
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    # Request arguments
+    doc_change_id = request.args.get('doc_change_id')
+
+    # Insert data into DB
+    db = get_db()
+    query = """
+            DELETE FROM
+                [order]
+            WHERE
+                [order].[id] = ?;
+            """
+    args = [row_id]
+    db.execute(query, args)
+    db.commit()
+
+    flash('Order was successfully deleted.')
+
+    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 @app.route('/insert_notice/', methods=['POST'])

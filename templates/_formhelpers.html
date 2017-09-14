@@ -11,3 +11,21 @@
         {% endif %}
     </div>
 {% endmacro %}
+{% macro render_datepicker(field) %}
+    <div class="form-group">
+        {% if field.widget.input_type != 'hidden' %}{{ field.label }}{% endif %}
+        <div class="input-group date datepicker" data-provide="datepicker">
+            {{ field(**kwargs)|safe }}
+            <div class="input-group-addon">
+                <span class="glyphicon glyphicon-th"></span>
+            </div>
+            {% if field.errors %}
+                <ul class="text-danger">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}

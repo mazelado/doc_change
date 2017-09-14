@@ -25,7 +25,7 @@
                 {% else %}
                     <form action="{{ url_for('update_doc_change', doc_change_id=doc_change_id) }}" method=post>
                     {{ render_field(doc_change_form.id, class='form-control') }}
-                    {{ render_field(doc_change_form.status, class='form-control') }}
+                    {{ render_field(doc_change_form.status_id, class='form-control') }}
                     {{ render_field(doc_change_form.submit_by, class='form-control') }}
                     {{ render_field(doc_change_form.submit_date, class='form-control') }}
                 {% endif %}

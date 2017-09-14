@@ -519,7 +519,7 @@ def show_all_doc_changes():
 
 class DocChangeForm(FlaskForm):
     id = HiddenField('Row ID')
-    status_id = SelectField('Status ID', coerce=int)
+    status_id = SelectField('Status', coerce=int, render_kw={'disabled': True})
     status = StringField('Status', render_kw={'readonly': True})
     submit_by = StringField('Submit By', render_kw={'readonly': True})
     submit_date = StringField('Submit Date', render_kw={'readonly': True})
@@ -555,7 +555,7 @@ class DocChangeOrderForm(FlaskForm):
     id = HiddenField('Row ID')
     doc_change_id = HiddenField('Document Change ID')
     document_type_id = SelectField('Document Type', coerce=int)
-    document_name = StringField('Document Name')
+    document_name = StringField('Document Type')
     notes = TextAreaField('Notes')
     responsible_name = StringField('Name', validators=[DataRequired(), Length(min=2)])
     responsible_email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
@@ -598,7 +598,18 @@ def show_doc_change(doc_change_id=0):
     doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
     doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
 
-    # TODO Add date control to Proposed Implement Date field (https://uxsolutions.github.io/bootstrap-datepicker/)
+    # Get Document Types from DB
+    query = """
+            SELECT [doc_change_status].[id], 
+                   [doc_change_status].[status]
+            FROM   [doc_change_status]
+            ORDER  BY [doc_change_status].[id];
+            """
+    args = []
+    doc_change_statuses = query_db(query, args)
+    doc_change_form.status_id.choices = [(row['id'], row['status']) for row in
+                                         doc_change_statuses]
+
     if doc_change_id == 0:  # New Doc Change
         return render_template('doc_change.html', error=error, doc_change_id=doc_change_id,
                                doc_change_form=doc_change_form, doc_change_request_form=doc_change_request_form,
@@ -606,7 +617,7 @@ def show_doc_change(doc_change_id=0):
     else:  # Existing Doc Change
         # Get data from doc_changes table
         query = """
-                SELECT [doc_change_status].[status], 
+                SELECT [doc_changes].[status_id], 
                        [doc_changes].[submit_date], 
                        [doc_changes].[submit_by], 
                        [doc_changes].[problem_desc], 
@@ -704,7 +715,7 @@ def show_doc_change(doc_change_id=0):
         notice_rows = query_db(query, args)
 
         # Populate form with data
-        doc_change_form.status.data = doc_change_row['status']
+        doc_change_form.status_id.data = doc_change_row['status_id']
         doc_change_form.submit_date.data = doc_change_row['submit_date']
         doc_change_form.submit_by.data = doc_change_row['submit_by']
         doc_change_form.problem_desc.data = doc_change_row['problem_desc']

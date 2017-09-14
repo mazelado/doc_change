@@ -5,6 +5,7 @@
 # TODO: Improvement - break into modules (views separated)
 # TODO: Try Django to see how it compares
 
+import logging
 import os
 import sqlite3
 import sys
@@ -14,7 +15,7 @@ from flask import Flask, request, render_template, session, g, redirect, url_for
 from flask_wtf import FlaskForm
 from passlib.context import CryptContext
 from wtforms import StringField, PasswordField, DateField, TextAreaField, HiddenField
-from wtforms.validators import DataRequired, Length, EqualTo, Email
+from wtforms.validators import DataRequired, Length, EqualTo, Email, Optional
 
 # Flask setup
 app = Flask(__name__)
@@ -80,6 +81,15 @@ def close_db(error):
     """
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
+
+
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ))
 
 
 # Views ----------------------------------------------------------------------------------------------------------------
@@ -511,7 +521,8 @@ class DocChangeForm(FlaskForm):
     problem_desc = TextAreaField('Problem Description', validators=[DataRequired()])
     proposal_desc = TextAreaField('Proposal Description', validators=[DataRequired()])
     proposed_implement_date = StringField('Proposed Implementation Date', validators=[DataRequired()])
-    actual_implement_date = StringField('Actual Implementation Date', render_kw={'readonly': True})
+    actual_implement_date = StringField('Actual Implementation Date', validators=[Optional()],
+                                        render_kw={'readonly': True})
 
 
 class DocChangeAffectedPartsForm(FlaskForm):
@@ -529,8 +540,8 @@ class DocChangeRequestForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(min=2)])
     email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
     status = StringField('Status')
-    sent_date = DateField('Date Sent')
-    approval_date = DateField('Date Approved')
+    sent_date = DateField('Date Sent', validators=[Optional()])
+    approval_date = DateField('Date Approved', validators=[Optional()])
     notes = TextAreaField('Notes')
 
 
@@ -551,9 +562,9 @@ def show_doc_change(doc_change_id=0):
     error = None
 
     doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
-    doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False)
     doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False,
                                                                 doc_change_id=doc_change_id)
+    doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
 
     # TODO Add date control to Proposed Implement Date field (https://uxsolutions.github.io/bootstrap-datepicker/)
     if doc_change_id == 0:  # New Doc Change
@@ -597,7 +608,9 @@ def show_doc_change(doc_change_id=0):
 
         # Get Requests from DB
         query = """
-                SELECT [request].[stakeholder_name], 
+                SELECT [request].[id],
+                       [request].[doc_change_id],
+                       [request].[stakeholder_name], 
                        [request].[stakeholder_email], 
                        [request_status].[status], 
                        [request].[sent_date], 
@@ -657,6 +670,7 @@ def show_doc_change(doc_change_id=0):
         return render_template('doc_change.html', error=error, doc_change_id=doc_change_id,
                                doc_change_form=doc_change_form,
                                doc_change_affected_parts_form=doc_change_affected_parts_form,
+                               doc_change_request_form=doc_change_request_form,
                                affected_parts_rows=affected_parts_rows, request_rows=request_rows,
                                order_rows=order_rows, notice_rows=notice_rows)
 
@@ -765,6 +779,7 @@ def insert_affected_part_no():
 
     # Save all form data to variables
     doc_change_id = doc_change_affected_parts_form.doc_change_id.data
+    print('doc_change_id = {}'.format(doc_change_id), file=sys.stderr)
     part_no = doc_change_affected_parts_form.part_no.data
     desc = doc_change_affected_parts_form.desc.data
     rev = doc_change_affected_parts_form.rev.data
@@ -872,7 +887,39 @@ def insert_request():
 
     :return:
     """
-    pass
+    error = None
+
+    doc_change_requests_form = DocChangeRequestForm(request.form, csrf_enabled=False)
+
+    # Save all form data to variables
+    doc_change_id = doc_change_requests_form.doc_change_id.data
+    name = doc_change_requests_form.name.data
+    email = doc_change_requests_form.email.data
+    status_id = 1
+    notes = doc_change_requests_form.notes.data
+
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    if doc_change_requests_form.validate_on_submit():
+        # Insert data into DB
+        db = get_db()
+        query = """
+                INSERT INTO [request]
+                    ([doc_change_id], 
+                    [stakeholder_name], 
+                    [stakeholder_email], 
+                    [status_id], 
+                    [notes])
+                    VALUES (?, ?, ?, ?, ?);
+                """
+        args = [doc_change_id, name, email, status_id, notes]
+        db.execute(query, args)
+        db.commit()
+
+    # flash_errors(doc_change_requests_form)
+    return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/update_request/', methods=['POST'])
@@ -882,7 +929,37 @@ def update_request():
 
     :return:
     """
-    pass
+    doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False)
+
+    # Save all form data to variables
+    row_id = doc_change_request_form.id.data
+    doc_change_id = doc_change_request_form.doc_change_id.data
+    stakeholder_name = doc_change_request_form.name.data
+    stakeholder_email = doc_change_request_form.email.data
+    notes = doc_change_request_form.notes.data
+
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    if doc_change_request_form.validate_on_submit():
+        # Insert data into DB
+        db = get_db()
+        query = """
+                UPDATE
+                    [request]
+                SET
+                    [stakeholder_name] = ?,
+                    [stakeholder_email] = ?,
+                    [notes] = ?
+                WHERE
+                    [request].[id] = ?;
+                """
+        args = [stakeholder_name, stakeholder_email, notes, row_id]
+        db.execute(query, args)
+        db.commit()
+
+    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 @app.route('/delete_request/<int:row_id>', methods=['POST'])
@@ -893,7 +970,26 @@ def delete_request(row_id):
     :param row_id:
     :return:
     """
-    pass
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    # Request arguments
+    doc_change_id = request.args.get('doc_change_id')
+
+    # Insert data into DB
+    db = get_db()
+    query = """
+                DELETE FROM
+                    [request]
+                WHERE
+                    [request].[id] = ?;
+                """
+    args = [row_id]
+    db.execute(query, args)
+    db.commit()
+
+    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 @app.route('/insert_order/', methods=['POST'])

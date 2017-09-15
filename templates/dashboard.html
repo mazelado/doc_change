@@ -11,6 +11,41 @@
         <h2>Dashboard for {{ session.name }}</h2>
     </div>
 
+{#    <!-- Incomplete Panel -->#}
+{#    <div class="container">#}
+{#        <div class="panel panel-default">#}
+{#            <div class="panel-heading">#}
+{#                <h4 class="panel-title">Incomplete Document Changes</h4>#}
+{#            </div>#}
+{#            <div class="panel-body">#}
+{#                <div class="table table-responsive">#}
+{#                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">#}
+{#                        <thead>#}
+{#                        <tr>#}
+{#                            <th data-sortable="true" data-align="center">ID</th>#}
+{#                            <th data-sortable="true" data-align="center">Submit Date</th>#}
+{#                            <th data-sortable="false" data-align="left">Problem</th>#}
+{#                            <th data-sortable="false" data-align="left">Proposal</th>#}
+{#                        </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+                        {# TODO: add class="danger" for past due requests #}
+{#                        {% for row in inc_results %}#}
+{#                            <tr>#}
+{#                                <td>#}
+{#                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>#}
+{#                                </td>#}
+{#                                <td>{{ row['submit_date'] }}</td>#}
+{#                                <td>{{ row['problem_desc'] }}</td>#}
+{#                                <td>{{ row['proposal_desc'] }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div> <!-- /Incomplete Panel -->#}
+
     <!-- Pending Requests Panel -->
     <div class="container">
         <div class="panel panel-default">

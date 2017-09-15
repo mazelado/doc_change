@@ -39,13 +39,17 @@
                     {{ render_field(doc_change_form.actual_implement_date, class='form-control') }}
                 {% endif %}
                 {% if doc_change_id == 0 %}
-                    <button class="btn btn-primary btn-lg btn-block pull-right" type="submit" value="Save">
-                        <span class="glyphicon glyphicon-save"></span> Save
-                    </button>
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-primary" type="submit" value="Save">
+                            <span class="glyphicon glyphicon-save"></span> Save
+                        </button>
+                    </div>
                 {% else %}
-                    <button class="btn btn-primary btn-lg btn-block pull-right" type="submit" value="Update">
-                        <span class="glyphicon glyphicon-save"></span> Update
-                    </button>
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-primary" type="submit" value="Update">
+                            <span class="glyphicon glyphicon-save"></span> Update
+                        </button>
+                    </div>
                 {% endif %}
                 </form>
             </div>

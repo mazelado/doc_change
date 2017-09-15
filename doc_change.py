@@ -375,7 +375,15 @@ def show_dashboard():
     if not session['logged_in'] or not session['can_view_doc']:
         abort(401)
 
-    # TODO: Get Problems (doc_change exists, but affected_part_nos = 0 or requests = 0)
+    # TODO: Show Incomplete Doc Changes (doc_change exists, but affected_part_nos = 0 or requests = 0)
+    # Does not appear to be possible with SQLite
+
+    # # Get Incomplete Doc Changes
+    # query = """
+    #
+    #         """
+    # args = [session['name']]
+    # inc_results = query_db(query, args)
 
     # Get Pending Requests
     query = """

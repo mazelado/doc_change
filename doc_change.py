@@ -598,7 +598,7 @@ def show_doc_change(doc_change_id=0):
     doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
     doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
 
-    # Get Document Types from DB
+    # Get Document Change Statuses from DB
     query = """
             SELECT [doc_change_status].[id], 
                    [doc_change_status].[status]
@@ -749,30 +749,45 @@ def insert_doc_change():
 
     doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
 
+    # Get Document Change Statuses from DB
+    query = """
+                SELECT [doc_change_status].[id], 
+                       [doc_change_status].[status]
+                FROM   [doc_change_status]
+                ORDER  BY [doc_change_status].[id];
+                """
+    args = []
+    doc_change_statuses = query_db(query, args)
+    doc_change_form.status_id.choices = [(row['id'], row['status']) for row in
+                                         doc_change_statuses]
+
+    # Save data to variables
+    doc_change_id = 0
+    doc_change_form.status_id.data = 1
+    status_id = doc_change_form.status_id.data
+    submit_by = session['name']
+    submit_date = '{dt.month}/{dt.day}/{dt.year}'.format(dt=datetime.now())
+    proposed_implement_date = doc_change_form.proposed_implement_date.data
+    problem_desc = doc_change_form.problem_desc.data
+    proposal_desc = doc_change_form.proposal_desc.data
+
     # Check permissions
     if not session['logged_in'] or not session['can_add_doc']:
         abort(401)
 
     if doc_change_form.validate_on_submit():
-        status_id = 1
-        submit_by = session['name']
-        submit_date = '{dt.month}/{dt.day}/{dt.year}'.format(dt=datetime.now())
-        proposed_implement_date = doc_change_form.proposed_implement_date.data
-        problem_desc = doc_change_form.problem_desc.data
-        proposal_desc = doc_change_form.proposal_desc.data
-
         # Add doc change to database
         db = get_db()
         query = """
-                    INSERT INTO [doc_changes]
-                        ([status_id],
-                        [submit_by], 
-                        [submit_date], 
-                        [proposed_implement_date], 
-                        [problem_desc], 
-                        [proposal_desc])
-                        VALUES (?, ?, ?, ?, ?, ?);
-                    """
+                INSERT INTO [doc_changes]
+                    ([status_id],
+                    [submit_by], 
+                    [submit_date], 
+                    [proposed_implement_date], 
+                    [problem_desc], 
+                    [proposal_desc])
+                    VALUES (?, ?, ?, ?, ?, ?);
+                """
         args = [status_id, submit_by, submit_date, proposed_implement_date, problem_desc, proposal_desc]
         cur = db.cursor()
         cur.execute(query, args)
@@ -784,6 +799,7 @@ def insert_doc_change():
 
         flash('Document Change {} was successfully added.'.format(doc_change_id))
 
+    flash_errors(doc_change_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
@@ -799,6 +815,19 @@ def update_doc_change(doc_change_id):
     error = None
 
     doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
+
+    # Get Document Change Statuses from DB
+    query = """
+                    SELECT [doc_change_status].[id], 
+                           [doc_change_status].[status]
+                    FROM   [doc_change_status]
+                    ORDER  BY [doc_change_status].[id];
+                    """
+    args = []
+    doc_change_statuses = query_db(query, args)
+    doc_change_form.status_id.choices = [(row['id'], row['status']) for row in
+                                         doc_change_statuses]
+    doc_change_form.status_id.data = 1 # Why do I have to do this if it's not referenced anywhere in this function?
 
     # Check permissions
     if not session['logged_in'] or not session['can_add_doc']:
@@ -827,6 +856,7 @@ def update_doc_change(doc_change_id):
 
         flash('Document Change {} was successfully updated.'.format(doc_change_id))
 
+    flash_errors(doc_change_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
@@ -1225,7 +1255,39 @@ def insert_notice():
 
     :return:
     """
-    pass
+    error = None
+
+    doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False)
+
+    # Save all form data to variables
+    doc_change_id = doc_change_notice_form.doc_change_id.data
+    authorize_name = doc_change_notice_form.authorize_name.data
+    authorize_email = doc_change_notice_form.authorize_email.data
+    notes = doc_change_notice_form.notes.data
+
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    if doc_change_notice_form.validate_on_submit():
+        # Insert data into DB
+        db = get_db()
+        query = """
+                    INSERT INTO [notice]
+                        ([doc_change_id], 
+                        [authorize_name], 
+                        [authorize_email], 
+                        [notes])
+                        VALUES (?, ?, ?, ?);
+                    """
+        args = [doc_change_id, authorize_name, authorize_email, notes]
+        db.execute(query, args)
+        db.commit()
+
+        flash('Notice was successfully added.')
+
+    flash_errors(doc_change_notice_form)
+    return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/update_notice/', methods=['POST'])
@@ -1235,7 +1297,40 @@ def update_notice():
 
     :return:
     """
-    pass
+    doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False)
+
+    # Save all form data to variables
+    row_id = doc_change_notice_form.id.data
+    doc_change_id = doc_change_notice_form.doc_change_id.data
+    authorize_name = doc_change_notice_form.authorize_name.data
+    authorize_email = doc_change_notice_form.authorize_email.data
+    notes = doc_change_notice_form.notes.data
+
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    if doc_change_notice_form.validate_on_submit():
+        # Update data in DB
+        db = get_db()
+        query = """
+                    UPDATE
+                        [notice]
+                    SET
+                        [authorize_name] = ?,
+                        [authorize_email] = ?,
+                        [notes] = ?
+                    WHERE
+                        [notice].[id] = ?;
+                    """
+        args = [authorize_name, authorize_email, notes, row_id]
+        db.execute(query, args)
+        db.commit()
+
+        flash('Notice was successfully updated.')
+
+    flash_errors(doc_change_notice_form)
+    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 @app.route('/delete_notice/<int:row_id>', methods=['POST'])
@@ -1246,7 +1341,28 @@ def delete_notice(row_id):
     :param row_id:
     :return:
     """
-    pass
+    # Check permissions
+    if not session['logged_in'] or not session['can_edit_doc']:
+        abort(401)
+
+    # Request arguments
+    doc_change_id = request.args.get('doc_change_id')
+
+    # Insert data into DB
+    db = get_db()
+    query = """
+                DELETE FROM
+                    [notice]
+                WHERE
+                    [notice].[id] = ?;
+                """
+    args = [row_id]
+    db.execute(query, args)
+    db.commit()
+
+    flash('Notice was successfully deleted.')
+
+    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 if __name__ == '__main__':

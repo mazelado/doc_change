@@ -21,9 +21,11 @@
             <div class="panel-body">
                 {% if doc_change_id == 0 %}
                     <form action="{{ url_for('insert_doc_change') }}" method=post>
-                    {{ render_field(doc_change_form.id, class='form-control') }}
                 {% else %}
                     <form action="{{ url_for('update_doc_change', doc_change_id=doc_change_id) }}" method=post>
+                {% endif %}
+                {% if doc_change_id == 0 %}
+                {% else %}
                     {{ render_field(doc_change_form.id, class='form-control') }}
                     {{ render_field(doc_change_form.status_id, class='form-control') }}
                     {{ render_field(doc_change_form.submit_by, class='form-control') }}
@@ -422,15 +424,24 @@
                                             <td>{{ row['authorize_date'] }}</td>
                                             <td>{{ row['notes'] }}</td>
                                             <td>
-                                                <button class="btn btn-primary" data-toggle="modal"
-                                                        data-target="#NoticeModal">
+                                                <button class="btn btn-primary" value="Edit" data-toggle="modal"
+                                                        data-target="#NoticeModal"
+                                                        data-row_id="{{ row['id'] }}"
+                                                        data-doc_change_id="{{ row['doc_change_id'] }}"
+                                                        data-authorize_name="{{ row['authorize_name'] }}"
+                                                        data-authorize_email="{{ row['authorize_email'] }}"
+                                                        data-notes="{{ row['notes'] }}">
                                                     <span class="glyphicon glyphicon-pencil"></span>
                                                 </button>
                                             </td>
                                             <td>
-                                                <button class="btn btn-danger">
-                                                    <span class="glyphicon glyphicon-remove-circle"></span>
-                                                </button>
+                                                <form method="post"
+                                                      action="{{ url_for('delete_notice', row_id=row['id'], doc_change_id=row['doc_change_id']) }}">
+                                                    <button class="btn btn-danger" type="submit"
+                                                            value="{{ row['id'] }}">
+                                                        <span class="glyphicon glyphicon-remove-circle"></span>
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -467,11 +478,11 @@
                                                 <h4 class="modal-title" id="NoticeModalLabel">Add Authorization</h4>
                                             </div>
                                             <div class="modal-body">
-                                                {{ render_field(doc_change_request_form.id, class='form-control') }}
-                                                {{ render_field(doc_change_request_form.doc_change_id, class='form-control') }}
-                                                {{ render_field(doc_change_request_form.stakeholder_name, class='form-control') }}
-                                                {{ render_field(doc_change_request_form.stakeholder_email, class='form-control') }}
-                                                {{ render_field(doc_change_request_form.notes, class='form-control') }}
+                                                {{ render_field(doc_change_notice_form.id, class='form-control') }}
+                                                {{ render_field(doc_change_notice_form.doc_change_id, class='form-control') }}
+                                                {{ render_field(doc_change_notice_form.authorize_name, class='form-control') }}
+                                                {{ render_field(doc_change_notice_form.authorize_email, class='form-control') }}
+                                                {{ render_field(doc_change_notice_form.notes, class='form-control') }}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-default" id="close"

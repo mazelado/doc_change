@@ -1,4 +1,6 @@
 {% extends 'layout.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_datepicker %}
 {% block body %}
     <div class="container">
         {% if error %}
@@ -6,8 +8,6 @@
                 <p><strong>Error:</strong> {{ error }}</p>
             </div>
         {% endif %}
-        {% from "_formhelpers.html" import render_field %}
-        {% from "_formhelpers.html" import render_datepicker %}
         {% if doc_change_id == 0 %}
             <h2 class="form-heading">Add a New Document Change</h2>
         {% else %}

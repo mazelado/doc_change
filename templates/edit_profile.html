@@ -1,6 +1,27 @@
-{% extends 'layout.html' %}
+{%- extends 'layout.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_datepicker %}
 {% block body %}
     <div class="container">
-        <h2>Edit Profile</h2>
+        {% if error %}
+            <div class="alert alert-danger">
+                <p><strong>Error:</strong> {{ error }}</p>
+            </div>
+        {% endif %}
     </div>
-{% endblock %}
+    <div class="container">
+        <h2>Edit Profile</h2>
+        <form action="{{ url_for('update_user') }}" method=post>
+            {{ render_field(form.username, class='form-control') }}
+            {{ render_field(form.name, class='form-control') }}
+            {{ render_field(form.email, class='form-control') }}
+            {{ render_field(form.password, class='form-control') }}
+            {{ render_field(form.confirm, class='form-control') }}
+            <div class="btn-group pull-right">
+                <button class="btn btn-primary" type="submit" value="Update">
+                    <span class="glyphicon glyphicon-save"></span> Update
+                </button>
+            </div>
+        </form>
+    </div>
+{%- endblock %}

@@ -83,13 +83,13 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">{{ session.name }} <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{{ url_for('update_user') }}">Edit Profile*</a></li>
+                                <li><a href="{{ url_for('update_user') }}">Edit Profile</a></li>
                                 <li role="separator" class="divider"></li>
                                 {% if session.can_add_user %}
                                     <li><a href="{{ url_for('show_register_user') }}">Add a User</a></li>
                                 {% endif %}
                                 {% if session.can_edit_user %}
-                                    <li><a href="{{ url_for('update_users_as_admin') }}">Edit Users*</a></li>
+                                    <li><a href="{{ url_for('show_edit_user') }}">Edit Users*</a></li>
                                 {% endif %}
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ url_for('do_logout') }}">Log Out</a></li>
@@ -101,14 +101,18 @@
         </div>
     </nav>
 
-    <!-- Flash messages -->
-    {% for message in get_flashed_messages() %}
-        <div class="alert alert-info alert-dismissable fade in" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                    aria-hidden="true">&times;</span></button>
-            {{ message }}
-        </div>
-    {% endfor %}
+    <!-- Flash messages - Categories: success (green), info (blue), warning (yellow), danger (red) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade in" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     <!-- /Flash messages -->
 
     {% block navbar %}{% endblock %}

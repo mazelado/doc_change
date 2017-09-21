@@ -1,77 +1,64 @@
 # TODO: Improvement - break into modules (views separated)
-# TODO: Improvement - use Flask-Bootstrap to simplify templates
-# TODO: Improvement - use Flask-Security for better authentication
 # TODO: Improvement - use Flask-RESTful to create REST API
 # TODO: Try Django to see how it compares
 
 import os
-import sqlite3
 import sys
 from datetime import datetime
 
 from flask import Flask, request, render_template, session, g, redirect, url_for, abort, flash
+from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from passlib.context import CryptContext
 from wtforms import StringField, PasswordField, TextAreaField, HiddenField, SelectField, DateField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, Optional
 
-# Flask setup
+# Set up Flask
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('CHANGE_FLASK_SETTINGS', silent=True)
+app.config['DEBUG'] = True
 
-# SQLite3 setup
-app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'doc_change.db'),
-    SECRET_KEY=b'\x80\xfd\x11\xef\xad\xe7\x92\x04j1\xcdP\x0b\x0c\xc3\xb8\xf3:\xb6S\xb8o\xb0\xc0'
-))
-
-# SQLAlchemy setup
+# Set up SQLAlchemy
 db_path = os.path.join(app.root_path, 'doc_change_sa.db')
 db_uri = 'sqlite:///{}'.format(db_path)
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SECRET_KEY'] = b'\x80\xfd\x11\xef\xad\xe7\x92\x04j1\xcdP\x0b\x0c\xc3\xb8\xf3:\xb6S\xb8o\xb0\xc0'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
-# Passlib setup
+# Set up Passlib
 pwd_context = CryptContext(schemes=['pbkdf2_sha256', 'des_crypt'], deprecated='auto')
 
-
 # SQLAlchemy Models ----------------------------------------------------------------------------------------------------
-class User(db.Model):
+roles_users = db.Table('roles_users',
+                       db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+                       db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
-    password_hash = db.Column(db.String(90))
     email = db.Column(db.String(120), unique=True)
+    password_hash = db.Column(db.String(90))
     name = db.Column(db.String(80))
-    can_view_user = db.Column(db.Boolean)
-    can_add_user = db.Column(db.Boolean)
-    can_edit_user = db.Column(db.Boolean)
-    can_delete_user = db.Column(db.Boolean)
-    can_view_doc = db.Column(db.Boolean)
-    can_add_doc = db.Column(db.Boolean)
-    can_edit_doc = db.Column(db.Boolean)
-    can_delete_doc = db.Column(db.Boolean)
-    can_send_doc = db.Column(db.Boolean)
+    active = db.Column(db.Boolean())
+    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, username, password_hash, email, name, can_view_user=False, can_add_user=False,
-                 can_edit_user=False, can_delete_user=False, can_view_doc=False, can_add_doc=False, can_edit_doc=False,
-                 can_delete_doc=False, can_send_doc=False):
+    def __init__(self, username, password_hash, email, name, active=True):
         self.username = username
         self.password_hash = password_hash
         self.email = email
         self.name = name
-        self.can_view_user = can_view_user
-        self.can_add_user = can_add_user
-        self.can_edit_user = can_edit_user
-        self.can_delete_user = can_delete_user
-        self.can_view_doc = can_view_doc
-        self.can_add_doc = can_add_doc
-        self.can_edit_doc = can_edit_doc
-        self.can_delete_doc = can_delete_doc
-        self.can_send_doc = can_send_doc
+        self.active = active
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -230,59 +217,12 @@ class Notice(db.Model):
         return '<Notice %r>' % self.id
 
 
+# Set up Flask-Security
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
+
+
 # Logic ----------------------------------------------------------------------------------------------------------------
-def connect_db():
-    """
-    Connects to the specific database.
-    """
-    con = sqlite3.connect(app.config['DATABASE'])
-    con.row_factory = sqlite3.Row
-    return con
-
-
-def init_db():
-    with app.app_context():
-        db = get_db()
-        with app.open_resource('schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
-
-
-@app.cli.command('initdb')
-def initdb_command():
-    """
-    Initializes the database.
-    """
-    init_db()
-    print('Initialized the database.')
-
-
-def get_db():
-    """
-    Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
-
-
-def query_db(query, args=(), one=False):
-    cur = get_db().execute(query, args)
-    rv = cur.fetchall()
-    cur.close()
-    return (rv[0] if rv else None) if one else rv
-
-
-@app.teardown_appcontext
-def close_db(error):
-    """
-    Closes the database again at the end of the request.
-    """
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
-
-
 def flash_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
@@ -293,7 +233,7 @@ def flash_errors(form):
             flash(u"Error in the %s field - %s" % (
                 getattr(form, field).label.text,
                 error
-            ))
+            ), 'danger')
 
 
 def check_doc_change_status(doc_change_id):
@@ -385,7 +325,7 @@ def check_doc_change_status(doc_change_id):
     doc_change.status_id = updated_status_id
     db.session.commit()
 
-    flash('Document Change {} status updated.'.format(doc_change_id))
+    flash('Document Change {} status updated.'.format(doc_change_id), 'success')
 
     return updated_status_id
 
@@ -470,26 +410,25 @@ def do_login():
 
         # If user is not found or password does not match
         if user is None or pwd_context.verify(password_from_form, user.password_hash) is False:
-            flash('Invalid username or password.')
+            flash('Invalid username or password.', 'danger')
         else:
             session['logged_in'] = True
             session['username'] = user.username
-            session['name'] = ' '.join([user.given_name if user.given_name is not None else '',
-                                        user.family_name if user.family_name is not None else '']).strip()
+            session['name'] = user.name
             session['user_id'] = user.id
 
             # Get user permissions
-            session['can_view_user'] = user.can_view_user
-            session['can_add_user'] = user.can_add_user
-            session['can_edit_user'] = user.can_edit_user
-            session['can_delete_user'] = user.can_delete_user
-            session['can_view_doc'] = user.can_view_doc
-            session['can_add_doc'] = user.can_add_doc
-            session['can_edit_doc'] = user.can_edit_doc
-            session['can_delete_doc'] = user.can_delete_doc
-            session['can_send_doc'] = user.can_send_doc
+            # session['can_view_user'] = user.can_view_user
+            # session['can_add_user'] = user.can_add_user
+            # session['can_edit_user'] = user.can_edit_user
+            # session['can_delete_user'] = user.can_delete_user
+            # session['can_view_doc'] = user.can_view_doc
+            # session['can_add_doc'] = user.can_add_doc
+            # session['can_edit_doc'] = user.can_edit_doc
+            # session['can_delete_doc'] = user.can_delete_doc
+            # session['can_send_doc'] = user.can_send_doc
 
-            flash('Logged in as {}.'.format(session['name']))
+            flash('Logged in as {}.'.format(session['name']), 'success')
             return redirect(url_for('show_dashboard'))
 
     flash_errors(form)
@@ -497,6 +436,7 @@ def do_login():
 
 
 @app.route('/logout/')
+@login_required
 def do_logout():
     """
     Log the user out of the system.
@@ -509,17 +449,18 @@ def do_logout():
     session.pop('logged_in', None)
     session.pop('username', None)
     session.pop('name', None)
-    session.pop('can_view_user', None)
-    session.pop('can_add_user', None)
-    session.pop('can_edit_user', None)
-    session.pop('can_delete_user', None)
-    session.pop('can_view_doc', None)
-    session.pop('can_add_doc', None)
-    session.pop('can_edit_doc', None)
-    session.pop('can_delete_doc', None)
-    session.pop('can_send_doc', None)
+    session.pop('user_id', None)
+    # session.pop('can_view_user', None)
+    # session.pop('can_add_user', None)
+    # session.pop('can_edit_user', None)
+    # session.pop('can_delete_user', None)
+    # session.pop('can_view_doc', None)
+    # session.pop('can_add_doc', None)
+    # session.pop('can_edit_doc', None)
+    # session.pop('can_delete_doc', None)
+    # session.pop('can_send_doc', None)
 
-    flash('{} logged out.'.format(name))
+    flash('{} logged out.'.format(name), 'info')
     return redirect(url_for('show_start'))
 
 
@@ -534,6 +475,7 @@ class RegistrationForm(FlaskForm):
 
 
 @app.route('/register/')
+@login_required
 def show_register_user():
     """
     Display the Register User page.
@@ -548,16 +490,13 @@ def show_register_user():
 
 
 @app.route('/do_register/', methods=['POST'])
+@login_required
 def insert_user():
     """
     Insert a row into the users table.
 
     :return:
     """
-    # Check permissions
-    if not session['logged_in'] or not session['can_add_user']:
-        abort(401)
-
     error = None
 
     # CSRF is disabled because it prevented this from working and I couldn't figure out why it was missing
@@ -571,44 +510,90 @@ def insert_user():
         existing_user = User.query.filter_by(username=form.username.data, email=form.email.data).first()
 
         if existing_user is not None:
-            flash('Invalid username.')
+            flash('Invalid username.', 'danger')
             return render_template('register_user.html', form=form, error=error)
         else:
             # Add user to database
             db.session.add(new_user)
             db.session.commit()
 
-            flash('New user \'{}\' was successfully added.'.format(new_user.username))
+            flash('New user \'{}\' was successfully added.'.format(new_user.username), 'success')
             return redirect(url_for('show_start'))
 
     return render_template('register_user.html', form=form, error=error)
 
 
-@app.route('/update_user/')
+@app.route('/edit_user/')
+@login_required
+def show_edit_user():
+    """
+    Show form to edit user information.
+
+    :return:
+    """
+    error = None
+
+    # CSRF is disabled because it prevented this from working and I couldn't figure out why it was missing
+    # TODO: Figure out why CSRF token is missing and re-enable
+    form = RegistrationForm(request.form, csrf_enabled=False)
+
+    user_to_show = User.query.filter_by(id=session['user_id']).first()
+    form.username.data = user_to_show.username
+    form.name.data = user_to_show.name
+    form.email.data = user_to_show.email
+
+    return render_template('edit_profile.html', error=error, form=form)
+
+
+@app.route('/update_user/', methods=['POST'])
+@login_required
 def update_user():
     """
     Edit user profile.
     """
     error = None
-    if not session['logged_in'] and not session['can_edit_user']:
-        abort(401)
 
-    return render_template('edit_profile.html', error=error)
+    # CSRF is disabled because it prevented this from working and I couldn't figure out why it was missing
+    # TODO: Figure out why CSRF token is missing and re-enable
+    form = RegistrationForm(request.form, csrf_enabled=False)
+
+    if form.validate_on_submit():
+        user_to_update = User.query.filter_by(id=session['user_id']).first()
+
+        user_to_update.username = form.username.data
+        user_to_update.name = form.name.data
+        user_to_update.email = form.email.data
+        user_to_update.password = pwd_context.hash(form.password.data)
+
+        db.session.commit()
+
+        flash('User \'{}\' successfully updated.'.format(user_to_update.username), 'success')
+
+    flash_errors(form)
+    return redirect(url_for('show_edit_user', error=error))
 
 
-@app.route('/update_users_as_admin/')
-def update_users_as_admin():
+@app.route('/edit_all_users/')
+@login_required
+def show_edit_all_users():
     """
-    Edit system users.
+    Show form to edit all user information.
+
+    :return:
     """
     error = None
-    if not session['logged_in'] and not session['can_edit_user']:
-        abort(401)
 
-    return render_template('edit_users.html', error=error)
+    # CSRF is disabled because it prevented this from working and I couldn't figure out why it was missing
+    # TODO: Figure out why CSRF token is missing and re-enable
+    form = RegistrationForm(request.form, csrf_enabled=False)
+
+    users_to_show = User.query.all()
+
+    return render_template('edit_all_users.html', error=error, form=form)
 
 
 @app.route('/dashboard/')
+@login_required
 def show_dashboard():
     """
     Display user dashboard.
@@ -621,20 +606,34 @@ def show_dashboard():
         abort(401)
 
     # TODO: Show Incomplete Doc Changes (doc_change exists, but affected_part_nos = 0 or requests = 0)
-    # Does not appear to be possible with SQLite
 
     # Get Incomplete Doc Changes
     # TODO: Test this query to make sure it works - needs OR for Request and AffectedPart filters
-    inc_results = DocChange.query.filter_by(status_id=1) \
-        .outerjoin(Request).filter_by(doc_change_id="") \
-        .outerjoin(AffectedPart).filter_by(doc_change_id="") \
-        .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
+    # inc_results = DocChange.query.filter_by(status_id=1) \
+    #     .outerjoin(Request).filter_by(doc_change_id="") \
+    #     .outerjoin(AffectedPart).filter_by(doc_change_id="") \
+    #     .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
 
     # Get Pending Requests
-    # TODO: Need a way to do GROUP_CONCAT in SQLAlchemy for part_nos column
-    req_results = DocChange.query.filter_by(status_id=1) \
-        .join(Request).filter_by(status_id=1, user_id=session['user_id']) \
-        .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
+    # req_results = DocChange.query.filter_by(status_id=1) \
+    #     .join(Request).filter_by(status_id=1, user_id=session['user_id']) \
+    #     .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
+    query = """
+            SELECT [doc_change].[id] AS [doc_change_id], 
+                   [doc_change].[submit_date] AS [doc_change_submit_date], 
+                   [doc_change].[problem_desc] AS [doc_change_problem_desc], 
+                   [doc_change].[proposal_desc] AS [doc_change_proposal_desc], 
+                   GROUP_CONCAT ([affected_part].[part_no], ", ") AS [part_nos]
+            FROM   [doc_change]
+                   JOIN [request] ON [doc_change].[id] = [request].[doc_change_id]
+                   JOIN [affected_part] ON [doc_change].[id] = [affected_part].[doc_change_id]
+            WHERE  [doc_change].[status_id] = :doc_change_status_id
+                   AND [request].[status_id] = :request_status_id
+                   AND [request].[user_id] = :request_user_id
+            GROUP  BY [doc_change].[id];            
+            """
+    args = {'doc_change_status_id': 1, 'request_status_id': 1, 'request_user_id': session['user_id']}
+    req_results = db.session.execute(query, args)
 
     # Get Pending Orders
     ord_results = DocChange.query.filter_by(status_id=4) \
@@ -652,6 +651,7 @@ def show_dashboard():
 
 
 @app.route('/dashboard_as_admin/')
+@login_required
 def show_dashboard_as_admin():
     """
     Display Administrator dashboard.
@@ -662,6 +662,7 @@ def show_dashboard_as_admin():
 
 
 @app.route('/doc_change/all/')
+@login_required
 def show_all_doc_changes():
     """
     Display all document changes in a filterable list.
@@ -675,13 +676,20 @@ def show_all_doc_changes():
         abort(401)
 
     # Get all Document Changes
-    # TODO: Need a way to do GROUP_CONCAT in SQLAlchemy for part_nos
-    rows = DocChange.query \
-        .join(DocChangeStatus) \
-        .join(AffectedPart) \
-        .group_by(DocChange.id) \
-        .with_entities(DocChange.id, DocChangeStatus.status, DocChange.submit_date, User.family_name, User.given_name,
-                       DocChange.problem_desc, DocChange.proposal_desc)
+    query = """
+            SELECT [doc_change].[id] AS [doc_change_id],
+                   [doc_change_status].[status] AS [doc_change_status_status],
+                   [doc_change].[submit_date] AS [doc_change_submit_date], 
+                   [doc_change].[problem_desc] AS [doc_change_problem_desc], 
+                   [doc_change].[proposal_desc] AS [doc_change_proposal_desc], 
+                   GROUP_CONCAT ([affected_part].[part_no], ", ") AS [part_nos]
+            FROM   [doc_change]
+                   JOIN [doc_change_status] ON [doc_change].[status_id] = [doc_change_status].[id]
+                   JOIN [affected_part] ON [doc_change].[id] = [affected_part].[doc_change_id]
+            GROUP  BY [doc_change].[id];            
+            """
+    args = {'doc_change_status_id': 1, 'request_status_id': 1, 'request_user_id': session['user_id']}
+    rows = db.session.execute(query, args)
 
     return render_template('view_all.html', error=error, rows=rows)
 
@@ -750,6 +758,7 @@ class DocChangeNoticeForm(FlaskForm):
 
 @app.route('/doc_change/')
 @app.route('/doc_change/<int:doc_change_id>/')
+@login_required
 def show_doc_change(doc_change_id=0):
     """
     View a Document Change from the DB
@@ -758,10 +767,6 @@ def show_doc_change(doc_change_id=0):
     :return:
     """
     error = None
-
-    # Check permissions
-    if not session['logged_in'] or not session['can_view_doc']:
-        abort(401)
 
     # Initialize forms
     doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
@@ -833,6 +838,7 @@ def show_doc_change(doc_change_id=0):
         doc_change_form.proposed_implement_date.data = doc_change_row.proposed_implement_date
         doc_change_form.actual_implement_date.data = doc_change_row.actual_implement_date
 
+        flash_errors(doc_change_form)
         return render_template('doc_change.html',
                                error=error,
                                doc_change_id=doc_change_id,
@@ -848,6 +854,7 @@ def show_doc_change(doc_change_id=0):
 
 
 @app.route('/insert_doc_change/', methods=['POST'])
+@login_required
 def insert_doc_change():
     """
     Insert a new Document Change into the DB
@@ -855,10 +862,6 @@ def insert_doc_change():
     :return:
     """
     error = None
-
-    # Check permissions
-    if not session['logged_in'] or not session['can_add_doc']:
-        abort(401)
 
     # Initialize forms
     doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
@@ -889,13 +892,14 @@ def insert_doc_change():
         # Store ID of last row added
         doc_change_id = new_doc_change.id
 
-        flash('Document Change {} was successfully added.'.format(doc_change_id))
+        flash('Document Change {} was successfully added.'.format(doc_change_id), 'success')
 
     flash_errors(doc_change_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/update_doc_change/<int:doc_change_id>/', methods=['POST'])
+@login_required
 def update_doc_change(doc_change_id):
     """
     Update a row in doc_change table.
@@ -904,10 +908,6 @@ def update_doc_change(doc_change_id):
     :return:
     """
     error = None
-
-    # Check permissions
-    if not session['logged_in'] or not session['can_add_doc']:
-        abort(401)
 
     # Initialize forms
     doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
@@ -931,13 +931,14 @@ def update_doc_change(doc_change_id):
 
         db.session.commit()
 
-        flash('Document Change {} was successfully updated.'.format(doc_change_id))
+        flash('Document Change {} was successfully updated.'.format(doc_change_id), 'success')
 
     flash_errors(doc_change_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/add_affected_part_no/', methods=['POST'])
+@login_required
 def insert_affected_part_no():
     """
     Insert a row into affected_part_no table.
@@ -946,16 +947,12 @@ def insert_affected_part_no():
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Initialize forms
     doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
+    doc_change_id = doc_change_affected_parts_form.doc_change_id.data
 
     if doc_change_affected_parts_form.validate_on_submit():
         # Save all form data to variables
-        doc_change_id = doc_change_affected_parts_form.doc_change_id.data
         part_no = doc_change_affected_parts_form.part_no.data
         new_affected_part = AffectedPart(doc_change_id,
                                          part_no,
@@ -967,12 +964,14 @@ def insert_affected_part_no():
         db.session.add(new_affected_part)
         db.session.commit()
 
-        flash('Part number \'{}\' was successfully added.'.format(part_no))
+        flash('Part number \'{}\' was successfully added.'.format(part_no), 'success')
 
+    flash_errors(doc_change_affected_parts_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/edit_affected_part_no/', methods=['POST'])
+@login_required
 def update_affected_part_no():
     """
     Update a row in affected_part_no table.
@@ -981,18 +980,14 @@ def update_affected_part_no():
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Initialize forms
     doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
+    doc_change_id = doc_change_affected_parts_form.doc_change_id.data
 
     if doc_change_affected_parts_form.validate_on_submit():
         # Save all form data to variables
         affected_part = AffectedPart.query.filter_by(id=doc_change_affected_parts_form.id.data).first()
         part_no = doc_change_affected_parts_form.part_no.data
-        doc_change_id = doc_change_affected_parts_form.doc_change_id.data
         affected_part.part_no = part_no
         affected_part.description = doc_change_affected_parts_form.desc.data
         affected_part.revision = doc_change_affected_parts_form.rev.data
@@ -1001,12 +996,14 @@ def update_affected_part_no():
         # Update data in DB
         db.session.commit()
 
-        flash('Part number \'{}\' was successfully updated.'.format(part_no))
+        flash('Part number \'{}\' was successfully updated.'.format(part_no), 'success')
 
+    flash_errors(doc_change_affected_parts_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/delete_affected_part_no/<int:row_id>/', methods=['POST'])
+@login_required
 def delete_affected_part_no(row_id):
     """
     Delete a row from affected_part_no table.
@@ -1014,10 +1011,6 @@ def delete_affected_part_no(row_id):
     :param row_id:
     :return:
     """
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Request arguments
     doc_change_id = request.args.get('doc_change_id')
 
@@ -1028,12 +1021,13 @@ def delete_affected_part_no(row_id):
     db.session.delete(affected_part)
     db.session.commit()
 
-    flash('Part \'{}\' was successfully deleted.'.format(part_no))
+    flash('Part \'{}\' was successfully deleted.'.format(part_no), 'success')
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 @app.route('/insert_request/', methods=['POST'])
+@login_required
 def insert_request():
     """
     Insert a row into requests table.
@@ -1042,12 +1036,9 @@ def insert_request():
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Initialize forms
     doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False)
+    doc_change_id = doc_change_request_form.doc_change_id.data
 
     # Get Request Statuses from DB
     request_statuses = RequestStatus.query.order_by(RequestStatus.id).all()
@@ -1059,7 +1050,6 @@ def insert_request():
 
     if doc_change_request_form.validate_on_submit():
         # Save all form data to variables
-        doc_change_id = doc_change_request_form.doc_change_id.data
         new_request = Request(doc_change_id,
                               doc_change_request_form.user_id.data,
                               doc_change_request_form.status_id.data,
@@ -1069,13 +1059,14 @@ def insert_request():
         db.session.add(new_request)
         db.session.commit()
 
-        flash('Request stakeholder {} was successfully added.'.format(new_request.user.name))
+        flash('Request stakeholder {} was successfully added.'.format(new_request.user.name), 'success')
 
     flash_errors(doc_change_request_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/update_request/', methods=['POST'])
+@login_required
 def update_request():
     """
     Update a row in requests table.
@@ -1084,12 +1075,9 @@ def update_request():
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Initialize forms
     doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False)
+    doc_change_id = doc_change_request_form.doc_change_id.data
 
     # Get Request Statuses from DB
     request_statuses = RequestStatus.query.order_by(RequestStatus.id).all()
@@ -1101,8 +1089,6 @@ def update_request():
 
     if doc_change_request_form.validate_on_submit():
         # Save all form data to variables
-        doc_change_id = doc_change_request_form.doc_change_id.data
-
         updated_request = Request.query.filter_by(id=doc_change_request_form.id.data).first()
         updated_request.user_id = doc_change_request_form.user_id.data
         updated_request.status_id = doc_change_request_form.status_id.data
@@ -1116,7 +1102,7 @@ def update_request():
         # Insert data into DB
         db.session.commit()
 
-        flash('Request stakeholder {} was successfully updated.'.format(updated_request.user.name))
+        flash('Request stakeholder {} was successfully updated.'.format(updated_request.user.name), 'success')
 
         check_doc_change_status(doc_change_id)
 
@@ -1125,6 +1111,7 @@ def update_request():
 
 
 @app.route('/delete_request/<int:row_id>', methods=['POST'])
+@login_required
 def delete_request(row_id):
     """
     Delete a row from requests table.
@@ -1132,10 +1119,6 @@ def delete_request(row_id):
     :param row_id:
     :return:
     """
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Request arguments
     doc_change_id = request.args.get('doc_change_id')
 
@@ -1146,7 +1129,7 @@ def delete_request(row_id):
     db.session.delete(request_to_delete)
     db.session.commit()
 
-    flash('Request stakeholder {} was successfully deleted.'.format(request_name))
+    flash('Request stakeholder {} was successfully deleted.'.format(request_name), 'success')
 
     check_doc_change_status(doc_change_id)
 
@@ -1154,6 +1137,7 @@ def delete_request(row_id):
 
 
 @app.route('/insert_order/', methods=['POST'])
+@login_required
 def insert_order():
     """
     Insert a row into order table.
@@ -1162,12 +1146,9 @@ def insert_order():
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Initialize forms
     doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False)
+    doc_change_id = doc_change_order_form.doc_change_id.data
 
     # Get Document Types from DB
     order_document_types = DocType.query.order_by(DocType.type).all()
@@ -1179,7 +1160,6 @@ def insert_order():
 
     if doc_change_order_form.validate_on_submit():
         # Save all form data to variables
-        doc_change_id = doc_change_order_form.doc_change_id.data
         order_to_insert = Order(doc_change_id,
                                 doc_change_order_form.document_type_id.data,
                                 doc_change_order_form.user_id.data,
@@ -1190,13 +1170,14 @@ def insert_order():
         db.session.add(order_to_insert)
         db.session.commit()
 
-        flash('Order was successfully added.')
+        flash('Order was successfully added.', 'success')
 
     flash_errors(doc_change_order_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/update_order/', methods=['POST'])
+@login_required
 def update_order():
     """
     Update a row in order table.
@@ -1205,12 +1186,9 @@ def update_order():
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Initialize forms
     doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False)
+    doc_change_id = doc_change_order_form.doc_change_id.data
 
     # Get Document Types from DB
     order_document_types = DocType.query.order_by(DocType.type).all()
@@ -1222,8 +1200,6 @@ def update_order():
 
     if doc_change_order_form.validate_on_submit():
         # Save all form data to variables
-        doc_change_id = doc_change_order_form.doc_change_id.data
-
         order_to_update = Order.query.filter_by(id=doc_change_order_form.id.data).first()
         order_to_update.doc_type_id = doc_change_order_form.document_type_id.data
         order_to_update.user_id = doc_change_order_form.user_id.data
@@ -1238,7 +1214,7 @@ def update_order():
         # Update data in DB
         db.session.commit()
 
-        flash('Order was successfully updated.')
+        flash('Order was successfully updated.', 'success')
 
         check_doc_change_status(doc_change_id)
 
@@ -1247,6 +1223,7 @@ def update_order():
 
 
 @app.route('/delete_order/<int:row_id>', methods=['POST'])
+@login_required
 def delete_order(row_id):
     """
     Delete a row from order table.
@@ -1254,10 +1231,6 @@ def delete_order(row_id):
     :param row_id:
     :return:
     """
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Request arguments
     doc_change_id = request.args.get('doc_change_id')
 
@@ -1267,7 +1240,7 @@ def delete_order(row_id):
     db.session.delete(order_to_delete)
     db.session.commit()
 
-    flash('Order was successfully deleted.')
+    flash('Order was successfully deleted.', 'success')
 
     check_doc_change_status(doc_change_id)
 
@@ -1275,6 +1248,7 @@ def delete_order(row_id):
 
 
 @app.route('/insert_notice/', methods=['POST'])
+@login_required
 def insert_notice():
     """
     Insert a row into notice table.
@@ -1283,12 +1257,9 @@ def insert_notice():
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Initialize forms
     doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False)
+    doc_change_id = doc_change_notice_form.doc_change_id.data
 
     # Get Users from DB
     users = User.query.order_by(User.name).all()
@@ -1296,8 +1267,6 @@ def insert_notice():
 
     if doc_change_notice_form.validate_on_submit():
         # Save all form data to variables
-        doc_change_id = doc_change_notice_form.doc_change_id.data
-
         notice_to_insert = Notice(doc_change_id, doc_change_notice_form.user_id.data,
                                   notes=doc_change_notice_form.notes.data)
 
@@ -1305,13 +1274,14 @@ def insert_notice():
         db.session.add(notice_to_insert)
         db.session.commit()
 
-        flash('Notice was successfully added.')
+        flash('Notice was successfully added.', 'success')
 
     flash_errors(doc_change_notice_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/update_notice/', methods=['POST'])
+@login_required
 def update_notice():
     """
     Update a row in notice table.
@@ -1320,12 +1290,9 @@ def update_notice():
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Initialize form
     doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False)
+    doc_change_id = doc_change_notice_form.doc_change_id.data
 
     # Get Users from DB
     users = User.query.order_by(User.name).all()
@@ -1333,8 +1300,6 @@ def update_notice():
 
     if doc_change_notice_form.validate_on_submit():
         # Save all form data to variables
-        doc_change_id = doc_change_notice_form.doc_change_id.data
-
         notice_to_update = Notice.query.filter_by(id=doc_change_notice_form.id.data).first()
         notice_to_update.user_id = doc_change_notice_form.user_id.data
         try:
@@ -1346,7 +1311,7 @@ def update_notice():
         # Update data in DB
         db.session.commit()
 
-        flash('Notice was successfully updated.')
+        flash('Notice was successfully updated.', 'success')
 
         check_doc_change_status(doc_change_id)
 
@@ -1355,6 +1320,7 @@ def update_notice():
 
 
 @app.route('/delete_notice/<int:row_id>', methods=['POST'])
+@login_required
 def delete_notice(row_id):
     """
     Delete a row from notice table.
@@ -1364,10 +1330,6 @@ def delete_notice(row_id):
     """
     error = None
 
-    # Check permissions
-    if not session['logged_in'] or not session['can_edit_doc']:
-        abort(401)
-
     # Request arguments
     doc_change_id = request.args.get('doc_change_id')
 
@@ -1376,7 +1338,7 @@ def delete_notice(row_id):
     db.session.delete(notice_to_delete)
     db.session.commit()
 
-    flash('Notice was successfully deleted.')
+    flash('Notice was successfully deleted.', 'success')
 
     check_doc_change_status(doc_change_id)
 
@@ -1384,6 +1346,7 @@ def delete_notice(row_id):
 
 
 @app.route('/copy_request_to_notice/<int:doc_change_id>', methods=['POST'])
+@login_required
 def copy_request_to_notice(doc_change_id):
     """
     Copy all stakeholders from request to notice.
@@ -1404,10 +1367,10 @@ def copy_request_to_notice(doc_change_id):
     db.session.execute(query, args)
     db.session.commit()
 
-    flash('Request stakeholders successfully copied to Notice.')
+    flash('Request stakeholders successfully copied to Notice.', 'success')
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run()

@@ -64,7 +64,7 @@
                             <th data-sortable="true" data-align="center">Submit Date</th>
                             <th data-sortable="false" data-align="left">Problem</th>
                             <th data-sortable="false" data-align="left">Proposal</th>
-{#                            <th data-sortable="false" data-align="left">Affected Part Nos</th>#}
+                            <th data-sortable="false" data-align="left">Affected Part Nos</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -72,12 +72,12 @@
                         {% for row in req_results %}
                             <tr>
                                 <td>
-                                    <a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['doc_change_id']) }}">{{ row['doc_change_id'] }}</a>
                                 </td>
-                                <td>{{ row.submit_date }}</td>
-                                <td>{{ row.problem_desc }}</td>
-                                <td>{{ row.proposal_desc }}</td>
-{#                                <td>{{ row.part_nos }}</td>#}
+                                <td>{{ row['doc_change_submit_date'] }}</td>
+                                <td>{{ row['doc_change_problem_desc'] }}</td>
+                                <td>{{ row['doc_change_proposal_desc'] }}</td>
+                                <td>{{ row['part_nos'] }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

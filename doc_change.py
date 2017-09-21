@@ -1,17 +1,16 @@
+# TODO: Improvement - break into modules (views separated)
 # TODO: Improvement - use Flask-Bootstrap to simplify templates
-# TODO: Improvement - use SQLAlchemy to switch databases easily, move to MySQL?
 # TODO: Improvement - use Flask-Security for better authentication
 # TODO: Improvement - use Flask-RESTful to create REST API
-# TODO: Improvement - break into modules (views separated)
 # TODO: Try Django to see how it compares
 
-import logging
 import os
 import sqlite3
 import sys
 from datetime import datetime
 
 from flask import Flask, request, render_template, session, g, redirect, url_for, abort, flash
+from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from passlib.context import CryptContext
 from wtforms import StringField, PasswordField, TextAreaField, HiddenField, SelectField, DateField
@@ -20,14 +19,215 @@ from wtforms.validators import DataRequired, Length, EqualTo, Email, Optional
 # Flask setup
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.config.from_envvar('CHANGE_FLASK_SETTINGS', silent=True)
+
+# SQLite3 setup
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'doc_change.db'),
     SECRET_KEY=b'\x80\xfd\x11\xef\xad\xe7\x92\x04j1\xcdP\x0b\x0c\xc3\xb8\xf3:\xb6S\xb8o\xb0\xc0'
 ))
-app.config.from_envvar('CHANGE_FLASK_SETTINGS', silent=True)
+
+# SQLAlchemy setup
+db_path = os.path.join(app.root_path, 'doc_change_sa.db')
+db_uri = 'sqlite:///{}'.format(db_path)
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = False
+db = SQLAlchemy(app)
 
 # Passlib setup
 pwd_context = CryptContext(schemes=['pbkdf2_sha256', 'des_crypt'], deprecated='auto')
+
+
+# SQLAlchemy Models ----------------------------------------------------------------------------------------------------
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True)
+    password_hash = db.Column(db.String(90))
+    email = db.Column(db.String(120), unique=True)
+    name = db.Column(db.String(80))
+    can_view_user = db.Column(db.Boolean)
+    can_add_user = db.Column(db.Boolean)
+    can_edit_user = db.Column(db.Boolean)
+    can_delete_user = db.Column(db.Boolean)
+    can_view_doc = db.Column(db.Boolean)
+    can_add_doc = db.Column(db.Boolean)
+    can_edit_doc = db.Column(db.Boolean)
+    can_delete_doc = db.Column(db.Boolean)
+    can_send_doc = db.Column(db.Boolean)
+
+    def __init__(self, username, password_hash, email, name, can_view_user=False, can_add_user=False,
+                 can_edit_user=False, can_delete_user=False, can_view_doc=False, can_add_doc=False, can_edit_doc=False,
+                 can_delete_doc=False, can_send_doc=False):
+        self.username = username
+        self.password_hash = password_hash
+        self.email = email
+        self.name = name
+        self.can_view_user = can_view_user
+        self.can_add_user = can_add_user
+        self.can_edit_user = can_edit_user
+        self.can_delete_user = can_delete_user
+        self.can_view_doc = can_view_doc
+        self.can_add_doc = can_add_doc
+        self.can_edit_doc = can_edit_doc
+        self.can_delete_doc = can_delete_doc
+        self.can_send_doc = can_send_doc
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+
+class DocChange(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status_id = db.Column(db.Integer, db.ForeignKey('doc_change_status.id'))
+    status = db.relationship('DocChangeStatus')
+    submit_date = db.Column(db.Date)
+    submit_by_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    submit_by = db.relationship('User')
+    problem_desc = db.Column(db.Text)
+    proposal_desc = db.Column(db.Text)
+    proposed_implement_date = db.Column(db.Date)
+    actual_implement_date = db.Column(db.Date)
+
+    def __init__(self, status_id, submit_date, submit_by_user_id, problem_desc, proposal_desc, proposed_implement_date,
+                 actual_implement_date=None):
+        self.status_id = status_id
+        self.submit_date = submit_date
+        self.submit_by_user_id = submit_by_user_id
+        self.problem_desc = problem_desc
+        self.proposal_desc = proposal_desc
+        self.proposed_implement_date = proposed_implement_date
+        self.actual_implement_date = actual_implement_date
+
+    def __repr__(self):
+        return '<DocChange %r>' % self.id
+
+
+class DocChangeStatus(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(50))
+
+    def __init__(self, id=1):
+        self.id = id
+
+    def __repr__(self):
+        return '<DocChangeStatus %r>' % self.status
+
+
+class AffectedPart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    doc_change_id = db.Column(db.Integer, db.ForeignKey('doc_change.id'))
+    doc_change = db.relationship('DocChange')
+    part_no = db.Column(db.String(50))
+    description = db.Column(db.String(50))
+    revision = db.Column(db.String(20))
+    routing = db.Column(db.String(50))
+
+    def __init__(self, doc_change_id, part_no, description=None, revision=None, routing=None):
+        self.doc_change_id = doc_change_id
+        self.part_no = part_no
+        self.description = description
+        self.revision = revision
+        self.routing = routing
+
+    def __repr__(self):
+        return '<AffectedPart %r>' % self.id
+
+
+class Request(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    doc_change_id = db.Column(db.Integer, db.ForeignKey('doc_change.id'))
+    doc_change = db.relationship('DocChange')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User')
+    status_id = db.Column(db.Integer, db.ForeignKey('request_status.id'))
+    status = db.relationship('RequestStatus')
+    sent_date = db.Column(db.Date)
+    approval_date = db.Column(db.Date)
+    notes = db.Column(db.Text)
+
+    def __init__(self, doc_change_id, user_id, status_id, sent_date=None, approval_date=None, notes=None):
+        self.doc_change_id = doc_change_id
+        self.user_id = user_id
+        self.status_id = status_id
+        self.sent_date = sent_date
+        self.approval_date = approval_date
+        self.notes = notes
+
+    def __repr__(self):
+        return '<Request %r>' % self.id
+
+
+class RequestStatus(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(50))
+
+    def __init__(self, status):
+        self.status = status
+
+    def __repr__(self):
+        return '<RequestStatus %r>' % self.status
+
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    doc_change_id = db.Column(db.Integer, db.ForeignKey('doc_change.id'))
+    doc_change = db.relationship('DocChange')
+    doc_type_id = db.Column(db.Integer, db.ForeignKey('doc_type.id'))
+    doc_type = db.relationship('DocType')
+    notes = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User')
+    due_date = db.Column(db.Date)
+    sent_date = db.Column(db.Date)
+    completed_date = db.Column(db.Date)
+    new_revision = db.Column(db.String(20))
+
+    def __init__(self, doc_change_id, doc_type_id, user_id, due_date, notes=None, sent_date=None, completed_date=None,
+                 new_revision=None):
+        self.doc_change_id = doc_change_id
+        self.doc_type_id = doc_type_id
+        self.notes = notes
+        self.user_id = user_id
+        self.due_date = due_date
+        self.sent_date = sent_date
+        self.completed_date = completed_date
+        self.new_revision = new_revision
+
+    def __repr__(self):
+        return '<Order %r>' % self.id
+
+
+class DocType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(50))
+
+    def __init__(self, type):
+        self.type = type
+
+    def __repr__(self):
+        return '<DocType %r>' % self.type
+
+
+class Notice(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    doc_change_id = db.Column(db.Integer, db.ForeignKey('doc_change.id'))
+    doc_change = db.relationship('DocChange')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User')
+    sent_date = db.Column(db.Date)
+    authorize_date = db.Column(db.Date)
+    notes = db.Column(db.Text)
+
+    def __init__(self, doc_change_id, user_id, sent_date=None, authorize_date=None, notes=None):
+        self.doc_change_id = doc_change_id
+        self.user_id = user_id
+        self.sent_date = sent_date
+        self.authorize_date = authorize_date
+        self.notes = notes
+
+    def __repr__(self):
+        return '<Notice %r>' % self.id
 
 
 # Logic ----------------------------------------------------------------------------------------------------------------
@@ -94,6 +294,100 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
             ))
+
+
+def check_doc_change_status(doc_change_id):
+    """
+    Check document change status and update if possible.
+
+    :param doc_change_id:
+    :return: True if updated, False if not updated
+    """
+    # Constants
+    REQUEST_OPEN = 1
+    REQUEST_DEFER = 2
+    REQUEST_CLOSE = 3
+    ORDER = 4
+    NOTICE = 5
+    COMPLETE = 6
+
+    PENDING = 1
+    PROMOTE = 2
+    DEFER = 3
+    CLOSE = 4
+
+    # Get current status
+    doc_change = DocChange.query.filter_by(id=doc_change_id).first()
+    updated_status_id = doc_change.status_id
+
+    # If doc change status is Request Open, Defer, or Close, check for possible promotion to Request Open, Defer, or Close, or Order
+    if (doc_change.status_id == REQUEST_OPEN) or (doc_change.status_id == REQUEST_DEFER) or (
+                doc_change.status_id == REQUEST_CLOSE):
+        request_total_count = Request.query.filter_by(doc_change_id=doc_change_id).count()
+        request_pending_count = Request.query.filter_by(doc_change_id=doc_change_id, status_id=PENDING).count()
+        request_promote_count = Request.query.filter_by(doc_change_id=doc_change_id, status_id=PROMOTE).count()
+        request_defer_count = Request.query.filter_by(doc_change_id=doc_change_id, status_id=DEFER).count()
+        request_close_count = Request.query.filter_by(doc_change_id=doc_change_id, status_id=CLOSE).count()
+
+        # Check if all request statuses match
+        if request_total_count == 0:  # No rows returnd
+            return False
+        elif request_pending_count == request_total_count:  # They're all Pending
+            updated_status_id = REQUEST_OPEN
+        elif request_promote_count == request_total_count:  # They're all Promote
+            updated_status_id = ORDER
+        elif request_defer_count == request_total_count:  # They're all Defer
+            updated_status_id = REQUEST_DEFER
+        elif request_close_count == request_total_count:  # They're all Close
+            updated_status_id = REQUEST_CLOSE
+        else:
+            return False
+
+    # If status is ORDER, check for possible promotion to NOTICE
+    elif doc_change.status_id == ORDER:
+        print('DEBUG: Checking orders for doc change {}...'.format(doc_change_id), file=sys.stderr)
+
+        order_total_count = Order.query.filter_by(doc_change_id=doc_change_id).count()
+        order_empty_count = Order.query.filter_by(doc_change_id=doc_change_id, new_revision='').count()
+        order_null_count = Order.query.filter_by(doc_change_id=doc_change_id, new_revision=None).count()
+        order_incomplete_count = order_empty_count + order_null_count
+
+        print('DEBUG: Total orders = {}'.format(order_total_count), file=sys.stderr)
+        print('DEBUG: Empty orders = {}'.format(order_empty_count), file=sys.stderr)
+        print('DEBUG: Null orders = {}'.format(order_null_count), file=sys.stderr)
+        print('DEBUG: Incomplete orders = {}'.format(order_incomplete_count), file=sys.stderr)
+
+        if order_total_count == 0:  # No rows returned
+            return False
+        elif order_incomplete_count == 0:  # No incomplete rows
+            updated_status_id = NOTICE
+        else:
+            return False
+
+    # If status is NOTICE, check for possible promotion to COMPLETE
+    elif doc_change.status_id == NOTICE:
+        notice_total_count = Notice.query.filter_by(doc_change_id=doc_change_id).count()
+        notice_empty_count = Notice.query.filter_by(doc_change_id=doc_change_id, authorize_date='').count()
+        notice_null_count = Notice.query.filter_by(doc_change_id=doc_change_id, authorize_date=None).count()
+        notice_incomplete_count = notice_empty_count + notice_null_count
+
+        if notice_total_count == 0:  # No rows returned
+            return False
+        elif notice_incomplete_count == 0:  # No incomplete rows
+            updated_status_id = COMPLETE
+        else:
+            return False
+    else:
+        return False
+
+    print('DEBUG: Updated status ID = {}'.format(updated_status_id), file=sys.stderr)
+
+    doc_change.status_id = updated_status_id
+    db.session.commit()
+
+    flash('Document Change {} status updated.'.format(doc_change_id))
+
+    return updated_status_id
 
 
 # Views ----------------------------------------------------------------------------------------------------------------
@@ -167,65 +461,39 @@ def do_login():
     #   (Related to FlaskWTFDeprecationWarning: "csrf_enabled" is deprecated and will be removed in 1.0. Set "meta.csrf" instead. ?)
     form = LoginForm(request.form, csrf_enabled=False)
 
-    if form.validate():
+    if form.validate_on_submit():
         username_from_form = form.username.data
         password_from_form = form.password.data
 
         # Validate login information
-        query = """
-                SELECT [username], 
-                       [password], 
-                       [first_name], 
-                       [last_name]
-                FROM   [users]
-                WHERE  [users].[username] = ?;
-                """
-        args = [username_from_form]
-        rows = query_db(query, args, one=True)
-        if len(rows) > 0:
-            username_from_db = rows[0]
-            hash_from_db = rows[1]
-            first_name_from_db = rows[2]
-            last_name_from_db = rows[3]
+        user = User.query.filter_by(username=username_from_form).first()
 
-        if len(rows) == 0 or pwd_context.verify(password_from_form, hash_from_db) is False:
-            error = 'Invalid username or password.'
+        # If user is not found or password does not match
+        if user is None or pwd_context.verify(password_from_form, user.password_hash) is False:
+            flash('Invalid username or password.')
         else:
             session['logged_in'] = True
-            session['username'] = username_from_db
-            session['name'] = ' '.join([first_name_from_db, last_name_from_db]).strip()
+            session['username'] = user.username
+            session['name'] = ' '.join([user.given_name if user.given_name is not None else '',
+                                        user.family_name if user.family_name is not None else '']).strip()
+            session['user_id'] = user.id
 
             # Get user permissions
-            query = """
-                    SELECT [can_view_user], 
-                           [can_add_user], 
-                           [can_edit_user], 
-                           [can_delete_user], 
-                           [can_view_doc], 
-                           [can_add_doc], 
-                           [can_edit_doc], 
-                           [can_delete_doc], 
-                           [can_send_doc]
-                    FROM   [users]
-                    WHERE  [users].[username] = ?;
-                    """
-            args = [session['username']]
-            rows = query_db(query, args, one=False)
-
-            session['can_view_user'] = rows[0][0]
-            session['can_add_user'] = rows[0][1]
-            session['can_edit_user'] = rows[0][2]
-            session['can_delete_user'] = rows[0][3]
-            session['can_view_doc'] = rows[0][4]
-            session['can_add_doc'] = rows[0][5]
-            session['can_edit_doc'] = rows[0][6]
-            session['can_delete_doc'] = rows[0][7]
-            session['can_send_doc'] = rows[0][8]
+            session['can_view_user'] = user.can_view_user
+            session['can_add_user'] = user.can_add_user
+            session['can_edit_user'] = user.can_edit_user
+            session['can_delete_user'] = user.can_delete_user
+            session['can_view_doc'] = user.can_view_doc
+            session['can_add_doc'] = user.can_add_doc
+            session['can_edit_doc'] = user.can_edit_doc
+            session['can_delete_doc'] = user.can_delete_doc
+            session['can_send_doc'] = user.can_send_doc
 
             flash('Logged in as {}.'.format(session['name']))
             return redirect(url_for('show_dashboard'))
 
-        return redirect(url_for('show_login', error=error))
+    flash_errors(form)
+    return redirect(url_for('show_login', error=error))
 
 
 @app.route('/logout/')
@@ -240,8 +508,6 @@ def do_logout():
     # Clear session variables
     session.pop('logged_in', None)
     session.pop('username', None)
-    session.pop('last_name', None)
-    session.pop('first_name', None)
     session.pop('name', None)
     session.pop('can_view_user', None)
     session.pop('can_add_user', None)
@@ -258,10 +524,9 @@ def do_logout():
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
-    email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
-    first_name = StringField('First Name', validators=[DataRequired(), Length(min=2, max=30)])
-    last_name = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=30)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=80)])
+    email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=120), Email()])
+    name = StringField('Name', validators=[DataRequired(), Length(min=3, max=80)])
     password = PasswordField('Password',
                              validators=[DataRequired(), EqualTo('confirm', message='Passwords do not match.'),
                                          Length(min=8, max=20)])
@@ -300,40 +565,20 @@ def insert_user():
     form = RegistrationForm(request.form, csrf_enabled=False)
 
     if form.validate_on_submit():
-        username = form.username.data
-        email = form.email.data
-        first_name = form.first_name.data
-        last_name = form.last_name.data
-        pwd_hash = pwd_context.hash(form.password.data)
+        new_user = User(form.username.data, pwd_context.hash(form.password.data), form.email.data, form.name.data)
 
-        db = get_db()
         # Check if user already exists
-        query = """
-                SELECT [username]
-                FROM   [users]
-                WHERE  [username] = ?;
-                """
-        args = [username]
-        results = query_db(query, args)
+        existing_user = User.query.filter_by(username=form.username.data, email=form.email.data).first()
 
-        if results:
-            error = 'Invalid username.'
+        if existing_user is not None:
+            flash('Invalid username.')
+            return render_template('register_user.html', form=form, error=error)
         else:
             # Add user to database
-            query = """
-                    INSERT INTO [users]
-                        ([username], 
-                        [email], 
-                        [first_name], 
-                        [last_name], 
-                        [password])
-                        VALUES (?, ?, ?, ?, ?);
-                    """
-            args = [username, email, first_name, last_name, pwd_hash]
-            db.execute(query, args)
-            db.commit()
+            db.session.add(new_user)
+            db.session.commit()
 
-            flash('New user \'{}\' was successfully added.'.format(username))
+            flash('New user \'{}\' was successfully added.'.format(new_user.username))
             return redirect(url_for('show_start'))
 
     return render_template('register_user.html', form=form, error=error)
@@ -378,56 +623,29 @@ def show_dashboard():
     # TODO: Show Incomplete Doc Changes (doc_change exists, but affected_part_nos = 0 or requests = 0)
     # Does not appear to be possible with SQLite
 
-    # # Get Incomplete Doc Changes
-    # query = """
-    #
-    #         """
-    # args = [session['name']]
-    # inc_results = query_db(query, args)
+    # Get Incomplete Doc Changes
+    # TODO: Test this query to make sure it works - needs OR for Request and AffectedPart filters
+    inc_results = DocChange.query.filter_by(status_id=1) \
+        .outerjoin(Request).filter_by(doc_change_id="") \
+        .outerjoin(AffectedPart).filter_by(doc_change_id="") \
+        .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
 
     # Get Pending Requests
-    query = """
-            SELECT [doc_changes].[id],  
-                   [doc_changes].[submit_date],   
-                   [doc_changes].[problem_desc], 
-                   [doc_changes].[proposal_desc],
-                   GROUP_CONCAT ([affected_parts].[part_no], ", ") AS [part_nos]
-            FROM   [doc_changes]
-                   INNER JOIN [request] ON [request].[doc_change_id] = [doc_changes].[id]
-                   INNER JOIN [affected_parts] ON [affected_parts].[doc_change_id] = [doc_changes].[id]
-            WHERE  ([doc_changes].[status_id] = 1)
-                   AND ([request].[stakeholder_name] = ?)
-            GROUP  BY [doc_changes].[id];    
-            """
-    args = [session['name']]
-    req_results = query_db(query, args)
+    # TODO: Need a way to do GROUP_CONCAT in SQLAlchemy for part_nos column
+    req_results = DocChange.query.filter_by(status_id=1) \
+        .join(Request).filter_by(status_id=1, user_id=session['user_id']) \
+        .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
 
     # Get Pending Orders
-    query = """
-            SELECT [order].[doc_change_id], 
-                   [document_types].[document_name], 
-                   [order].[notes],  
-                   [order].[due_date]
-            FROM   [order]
-                   INNER JOIN [document_types] ON [document_types].[id] = [order].[document_type_id]
-            WHERE  ([order].[responsible_name] = ?)
-                   AND ([order].[completed_date] = "");
-            """
-    args = [session['name']]
-    ord_results = query_db(query, args)
+    ord_results = DocChange.query.filter_by(status_id=4) \
+        .join(Order).filter_by(user_id=session['user_id'], completed_date="") \
+        .join(DocType) \
+        .with_entities(DocChange.id, DocType.type, Order.notes, Order.due_date)
 
     # Get Pending Notices
-    query = """
-            SELECT [doc_changes].[id], 
-                   [doc_changes].[proposed_implement_date]
-            FROM   [doc_changes]
-                   INNER JOIN [notice] ON [notice].[doc_change_id] = [doc_changes].[id]
-            WHERE  ([notice].[authorize_name] = ?)
-                   AND ([notice].[authorize_date] = "")
-            GROUP  BY [doc_changes].[id];
-            """
-    args = [session['name']]
-    ntc_results = query_db(query, args)
+    ntc_results = DocChange.query.filter_by(status_id=5) \
+        .join(Notice).filter_by(user_id=session['user_id'], authorize_date='') \
+        .with_entities(DocChange.id, DocChange.proposed_implement_date)
 
     return render_template('dashboard.html', error=error, req_results=req_results, ord_results=ord_results,
                            ntc_results=ntc_results)
@@ -440,57 +658,7 @@ def show_dashboard_as_admin():
 
     :return:
     """
-    error = None
-
-    # Check permissions
-    if not session['logged_in'] or not session['can_view_doc'] or not session['name'] == 'Administrator':
-        abort(401)
-
-    # TODO: Get Problems (doc_change exists, but affected_part_nos = 0 or requests = 0)
-
-    # Get Requests from DB
-    query = """
-            SELECT [doc_changes].[id],  
-                   [doc_changes].[submit_date],   
-                   [doc_changes].[problem_desc], 
-                   [doc_changes].[proposal_desc],
-                   GROUP_CONCAT ([affected_parts].[part_no], ", ") AS [part_nos]
-            FROM   [doc_changes]
-                   INNER JOIN [request] ON [request].[doc_change_id] = [doc_changes].[id]
-                   INNER JOIN [affected_parts] ON [affected_parts].[doc_change_id] = [doc_changes].[id]
-            WHERE  ([doc_changes].[status_id] = 1)
-            GROUP  BY [doc_changes].[id];    
-            """
-    args = []
-    req_results = query_db(query, args)
-
-    # Get Orders from DB
-    query = """
-            SELECT [order].[doc_change_id], 
-                   [document_types].[document_name], 
-                   [order].[notes],  
-                   [order].[due_date]
-            FROM   [order]
-                   INNER JOIN [document_types] ON [document_types].[id] = [order].[document_type_id]
-            WHERE  ([order].[completed_date] = "");
-            """
-    args = []
-    ord_results = query_db(query, args)
-
-    # Get Notices from DB
-    query = """
-            SELECT [doc_changes].[id], 
-                   [doc_changes].[proposed_implement_date]
-            FROM   [doc_changes]
-                   INNER JOIN [notice] ON [notice].[doc_change_id] = [doc_changes].[id]
-            WHERE  ([notice].[authorize_date] = "")
-            GROUP  BY [doc_changes].[id];
-            """
-    args = []
-    ntc_results = query_db(query, args)
-
-    return render_template('dashboard.html', error=error, req_results=req_results, ord_results=ord_results,
-                           ntc_results=ntc_results)
+    return 'Administrator Dashboard'
 
 
 @app.route('/doc_change/all/')
@@ -506,21 +674,14 @@ def show_all_doc_changes():
     if not session['logged_in'] or not session['can_view_doc']:
         abort(401)
 
-    query = """
-            SELECT [doc_changes].[id], 
-                   [doc_change_status].[status], 
-                   [doc_changes].[submit_date], 
-                   [doc_changes].[submit_by], 
-                   [doc_changes].[problem_desc], 
-                   [doc_changes].[proposal_desc], 
-                   GROUP_CONCAT ([affected_parts].[part_no], ", ") AS [part_nos]
-            FROM   [doc_changes]
-                   INNER JOIN [affected_parts] ON [affected_parts].[doc_change_id] = [doc_changes].[id]
-                   INNER JOIN [doc_change_status] ON [doc_change_status].[id] = [doc_changes].[status_id]
-            GROUP  BY [doc_changes].[id];
-            """
-    args = []
-    rows = query_db(query, args)
+    # Get all Document Changes
+    # TODO: Need a way to do GROUP_CONCAT in SQLAlchemy for part_nos
+    rows = DocChange.query \
+        .join(DocChangeStatus) \
+        .join(AffectedPart) \
+        .group_by(DocChange.id) \
+        .with_entities(DocChange.id, DocChangeStatus.status, DocChange.submit_date, User.family_name, User.given_name,
+                       DocChange.problem_desc, DocChange.proposal_desc)
 
     return render_template('view_all.html', error=error, rows=rows)
 
@@ -529,6 +690,7 @@ class DocChangeForm(FlaskForm):
     id = HiddenField('Row ID')
     status_id = SelectField('Status', coerce=int, render_kw={'disabled': True})
     status = StringField('Status', render_kw={'readonly': True})
+    submit_by_user_id = SelectField('Submit By User ID', coerce=int, render_kw={'disabled': True})
     submit_by = StringField('Submit By', render_kw={'readonly': True})
     submit_date = StringField('Submit Date', render_kw={'readonly': True})
     problem_desc = TextAreaField('Problem Description', validators=[DataRequired()])
@@ -550,8 +712,9 @@ class DocChangeAffectedPartsForm(FlaskForm):
 class DocChangeRequestForm(FlaskForm):
     id = HiddenField('Row ID')
     doc_change_id = HiddenField('Document Change ID')
-    stakeholder_name = StringField('Name', validators=[DataRequired(), Length(min=2)])
-    stakeholder_email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
+    user_id = SelectField('Stakeholder', coerce=int)
+    name = StringField('Name', render_kw={'readonly': True})
+    email = StringField('Email Address', render_kw={'readonly': True})
     status_id = SelectField('Status', coerce=int)
     status = StringField('Status')
     sent_date = StringField('Date Sent', validators=[Optional()])
@@ -565,8 +728,9 @@ class DocChangeOrderForm(FlaskForm):
     document_type_id = SelectField('Document Type', coerce=int)
     document_name = StringField('Document Type')
     notes = TextAreaField('Notes')
-    responsible_name = StringField('Name', validators=[DataRequired(), Length(min=2)])
-    responsible_email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
+    user_id = SelectField('Responsible', coerce=int)
+    name = StringField('Name', render_kw={'readonly': True})
+    email = StringField('Email Address', render_kw={'readonly': True})
     due_date = StringField('Due Date', validators=[DataRequired()])
     sent_date = StringField('Sent Date')
     completed_date = StringField('Completed Date')
@@ -576,8 +740,9 @@ class DocChangeOrderForm(FlaskForm):
 class DocChangeNoticeForm(FlaskForm):
     id = HiddenField('Row ID')
     doc_change_id = HiddenField('Document Change ID')
-    authorize_name = StringField('Name', validators=[DataRequired(), Length(min=2)])
-    authorize_email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=50), Email()])
+    user_id = SelectField('Authorize By', coerce=int)
+    name = StringField('Name', render_kw={'readonly': True})
+    email = StringField('Email Address', render_kw={'readonly': True})
     sent_date = StringField('Sent Date', validators=[Optional()])
     authorize_date = StringField('Authorized Date', validators=[Optional()])
     notes = TextAreaField('Notes')
@@ -592,13 +757,13 @@ def show_doc_change(doc_change_id=0):
     :param doc_change_id:
     :return:
     """
+    error = None
 
     # Check permissions
     if not session['logged_in'] or not session['can_view_doc']:
         abort(401)
 
-    error = None
-
+    # Initialize forms
     doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
     doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False,
                                                                 doc_change_id=doc_change_id)
@@ -607,129 +772,66 @@ def show_doc_change(doc_change_id=0):
     doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False, doc_change_id=doc_change_id)
 
     # Get Document Change Statuses from DB
-    query = """
-            SELECT [doc_change_status].[id], 
-                   [doc_change_status].[status]
-            FROM   [doc_change_status]
-            ORDER  BY [doc_change_status].[id];
-            """
-    args = []
-    doc_change_statuses = query_db(query, args)
-    doc_change_form.status_id.choices = [(row['id'], row['status']) for row in
-                                         doc_change_statuses]
+    doc_change_statuses = DocChangeStatus.query.order_by(DocChangeStatus.id).all()
+    doc_change_form.status_id.choices = [(row.id, row.status) for row in doc_change_statuses]
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_form.submit_by_user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+    doc_change_request_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+    doc_change_order_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+    doc_change_notice_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+
+    # Get Request Statuses from DB
+    request_statuses = RequestStatus.query.order_by(RequestStatus.id).all()
+    doc_change_request_form.status_id.choices = [(row.id, row.status) for row in request_statuses]
+
+    # Get Document Types from DB
+    order_document_types = DocType.query.order_by(DocType.type).all()
+    doc_change_order_form.document_type_id.choices = [(row.id, row.type) for row in order_document_types]
 
     if doc_change_id == 0:  # New Doc Change
         return render_template('doc_change.html', error=error, doc_change_id=doc_change_id,
                                doc_change_form=doc_change_form, doc_change_request_form=doc_change_request_form,
                                doc_change_affected_parts_form=doc_change_affected_parts_form)
     else:  # Existing Doc Change
-        # Get data from doc_changes table
-        query = """
-                SELECT [doc_changes].[status_id], 
-                       [doc_changes].[submit_date], 
-                       [doc_changes].[submit_by], 
-                       [doc_changes].[problem_desc], 
-                       [doc_changes].[proposal_desc], 
-                       [doc_changes].[proposed_implement_date], 
-                       [doc_changes].[actual_implement_date]
-                FROM   [doc_changes]
-                       INNER JOIN [doc_change_status] ON [doc_change_status].[id] = [doc_changes].[status_id]
-                WHERE  [doc_changes].[id] = ?;
-                """
-        args = [doc_change_id]
-        doc_change_row = query_db(query, args, one=True)
+        # Get Document Change data
+        doc_change_row = DocChange.query.filter_by(id=doc_change_id).first()
 
         # Check that records exist in DB
         if not doc_change_row:
             redirect(url_for('show_doc_change', doc_change_id=0))
 
-        # Get data from affected_part_no table
-        query = """
-                SELECT [affected_parts].[id],
-                       [affected_parts].[doc_change_id],
-                       [affected_parts].[part_no], 
-                       [affected_parts].[revision], 
-                       [affected_parts].[routing], 
-                       [affected_parts].[description]
-                FROM   [affected_parts]
-                WHERE  [affected_parts].[doc_change_id] = ?;
-                """
-        args = [doc_change_id]
-        affected_parts_rows = query_db(query, args)
+        # Get Affected Parts
+        affected_parts_rows = AffectedPart.query.filter_by(doc_change_id=doc_change_id).all()
 
-        # Get Requests from DB
-        query = """
-                SELECT [request].[id],
-                       [request].[doc_change_id],
-                       [request].[stakeholder_name], 
-                       [request].[stakeholder_email], 
-                       [request_status].[status], 
-                       [request].[sent_date], 
-                       [request].[approval_date], 
-                       [request].[notes]
-                FROM   [request]
-                       INNER JOIN [request_status] ON [request_status].[id] = [request].[status_id]
-                WHERE  [request].[doc_change_id] = ?;
-                """
-        args = [doc_change_id]
-        request_rows = query_db(query, args)
+        # Get Requests
+        request_rows = Request.query.filter_by(doc_change_id=doc_change_id) \
+            .join(User) \
+            .add_columns(User.name, User.email) \
+            .all()
 
-        # Get Orders from DB
-        query = """
-                SELECT [order].[id], 
-                       [order].[doc_change_id],
-                       [order].[document_type_id], 
-                       [document_types].[document_name], 
-                       [order].[notes], 
-                       [order].[responsible_name], 
-                       [order].[responsible_email], 
-                       [order].[due_date], 
-                       [order].[sent_date], 
-                       [order].[completed_date], 
-                       [order].[new_revision]
-                FROM   [order]
-                       INNER JOIN [document_types] ON [document_types].[id] = [order].[document_type_id]
-                WHERE  [order].[doc_change_id] = ?;
-                """
-        args = [doc_change_id]
-        order_rows = query_db(query, args)
-
-        # Get Document Types from DB
-        query = """
-                SELECT [document_types].[id], 
-                       [document_types].[document_name]
-                FROM   [document_types]
-                ORDER  BY [document_types].[document_name];
-                """
-        args = []
-        order_document_types = query_db(query, args)
-        doc_change_order_form.document_type_id.choices = [(row['id'], row['document_name']) for row in
-                                                          order_document_types]
+        # Get Orders
+        order_rows = Order.query.filter_by(doc_change_id=doc_change_id) \
+            .join(DocType) \
+            .join(User) \
+            .add_columns(DocType.type, User.name, User.email) \
+            .all()
 
         # Get Notices from DB
-        query = """
-                SELECT [notice].[id], 
-                       [notice].[doc_change_id], 
-                       [notice].[authorize_name], 
-                       [notice].[authorize_email], 
-                       [notice].[sent_date], 
-                       [notice].[authorize_date], 
-                       [notice].[notes]
-                FROM   [notice]
-                WHERE  [notice].[doc_change_id] = ?
-                GROUP BY [notice].[authorize_name];
-                """
-        args = [doc_change_id]
-        notice_rows = query_db(query, args)
+        notice_rows = Notice.query.filter_by(doc_change_id=doc_change_id) \
+            .join(User) \
+            .add_columns(User.name, User.email) \
+            .all()
 
         # Populate form with data
-        doc_change_form.status_id.data = doc_change_row['status_id']
-        doc_change_form.submit_date.data = doc_change_row['submit_date']
-        doc_change_form.submit_by.data = doc_change_row['submit_by']
-        doc_change_form.problem_desc.data = doc_change_row['problem_desc']
-        doc_change_form.proposal_desc.data = doc_change_row['proposal_desc']
-        doc_change_form.proposed_implement_date.data = doc_change_row['proposed_implement_date']
-        doc_change_form.actual_implement_date.data = doc_change_row['actual_implement_date']
+        doc_change_form.status_id.data = doc_change_row.status_id
+        doc_change_form.submit_date.data = doc_change_row.submit_date
+        doc_change_form.submit_by_user_id.data = doc_change_row.submit_by.id
+        doc_change_form.problem_desc.data = doc_change_row.problem_desc
+        doc_change_form.proposal_desc.data = doc_change_row.proposal_desc
+        doc_change_form.proposed_implement_date.data = doc_change_row.proposed_implement_date
+        doc_change_form.actual_implement_date.data = doc_change_row.actual_implement_date
 
         return render_template('doc_change.html',
                                error=error,
@@ -752,58 +854,40 @@ def insert_doc_change():
 
     :return:
     """
-
     error = None
-
-    doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
-
-    # Get Document Change Statuses from DB
-    query = """
-                SELECT [doc_change_status].[id], 
-                       [doc_change_status].[status]
-                FROM   [doc_change_status]
-                ORDER  BY [doc_change_status].[id];
-                """
-    args = []
-    doc_change_statuses = query_db(query, args)
-    doc_change_form.status_id.choices = [(row['id'], row['status']) for row in
-                                         doc_change_statuses]
-
-    # Save data to variables
-    doc_change_id = 0
-    doc_change_form.status_id.data = 1
-    status_id = doc_change_form.status_id.data
-    submit_by = session['name']
-    submit_date = '{dt.month}/{dt.day}/{dt.year}'.format(dt=datetime.now())
-    proposed_implement_date = doc_change_form.proposed_implement_date.data
-    problem_desc = doc_change_form.problem_desc.data
-    proposal_desc = doc_change_form.proposal_desc.data
 
     # Check permissions
     if not session['logged_in'] or not session['can_add_doc']:
         abort(401)
 
+    # Initialize forms
+    doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
+
+    # Get Document Change Statuses from DB
+    doc_change_statuses = DocChangeStatus.query.order_by(DocChangeStatus.id).all()
+    doc_change_form.status_id.choices = [(row.id, row.status) for row in doc_change_statuses]
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_form.submit_by_user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+    doc_change_form.submit_by_user_id.data = session['user_id']
+
     if doc_change_form.validate_on_submit():
+        # Save data to variables
+        doc_change_form.status_id.data = 1
+        new_doc_change = DocChange(doc_change_form.status_id.data,
+                                   datetime.today(),
+                                   session['user_id'],
+                                   doc_change_form.problem_desc.data,
+                                   doc_change_form.proposal_desc.data,
+                                   datetime.strptime(doc_change_form.proposed_implement_date.data, '%Y-%m-%d'))
+
         # Add doc change to database
-        db = get_db()
-        query = """
-                INSERT INTO [doc_changes]
-                    ([status_id],
-                    [submit_by], 
-                    [submit_date], 
-                    [proposed_implement_date], 
-                    [problem_desc], 
-                    [proposal_desc])
-                    VALUES (?, ?, ?, ?, ?, ?);
-                """
-        args = [status_id, submit_by, submit_date, proposed_implement_date, problem_desc, proposal_desc]
-        cur = db.cursor()
-        cur.execute(query, args)
+        db.session.add(new_doc_change)
+        db.session.commit()
 
         # Store ID of last row added
-        doc_change_id = cur.lastrowid
-
-        db.commit()
+        doc_change_id = new_doc_change.id
 
         flash('Document Change {} was successfully added.'.format(doc_change_id))
 
@@ -819,48 +903,33 @@ def update_doc_change(doc_change_id):
     :param doc_change_id:
     :return:
     """
-
     error = None
-
-    doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
-
-    # Get Document Change Statuses from DB
-    query = """
-                    SELECT [doc_change_status].[id], 
-                           [doc_change_status].[status]
-                    FROM   [doc_change_status]
-                    ORDER  BY [doc_change_status].[id];
-                    """
-    args = []
-    doc_change_statuses = query_db(query, args)
-    doc_change_form.status_id.choices = [(row['id'], row['status']) for row in
-                                         doc_change_statuses]
-    doc_change_form.status_id.data = 1 # Why do I have to do this if it's not referenced anywhere in this function?
 
     # Check permissions
     if not session['logged_in'] or not session['can_add_doc']:
         abort(401)
 
-    if doc_change_form.validate_on_submit():
-        problem_desc = doc_change_form.problem_desc.data
-        proposal_desc = doc_change_form.proposal_desc.data
-        proposed_implement_date = doc_change_form.proposed_implement_date.data
+    # Initialize forms
+    doc_change_form = DocChangeForm(request.form, csrf_enabled=False)
 
+    # Get Document Change Statuses from DB
+    doc_change_statuses = DocChangeStatus.query.order_by(DocChangeStatus.id).all()
+    doc_change_form.status_id.choices = [(row.id, row.status) for row in doc_change_statuses]
+    doc_change_form.status_id.data = 1
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_form.submit_by_user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+    doc_change_form.submit_by_user_id.data = session['user_id']
+
+    if doc_change_form.validate_on_submit():
         # Update doc change
-        db = get_db()
-        query = """
-                UPDATE
-                    [doc_changes]
-                SET
-                    [problem_desc] = ?, 
-                    [proposal_desc] = ?, 
-                    [proposed_implement_date] = ?
-                WHERE
-                    [doc_changes].[id] = ?;
-                """
-        args = [problem_desc, proposal_desc, proposed_implement_date, doc_change_id]
-        db.execute(query, args)
-        db.commit()
+        doc_change = DocChange.query.filter_by(id=doc_change_id).first()
+        doc_change.problem_desc = doc_change_form.problem_desc.data
+        doc_change.proposal_desc = doc_change_form.proposal_desc.data
+        doc_change.proposed_implement_date = datetime.strptime(doc_change_form.proposed_implement_date.data, '%Y-%m-%d')
+
+        db.session.commit()
 
         flash('Document Change {} was successfully updated.'.format(doc_change_id))
 
@@ -877,36 +946,28 @@ def insert_affected_part_no():
     """
     error = None
 
-    doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
-
-    # Save all form data to variables
-    doc_change_id = doc_change_affected_parts_form.doc_change_id.data
-    part_no = doc_change_affected_parts_form.part_no.data
-    desc = doc_change_affected_parts_form.desc.data
-    rev = doc_change_affected_parts_form.rev.data
-    routing = doc_change_affected_parts_form.routing.data
-
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
 
-    if doc_change_affected_parts_form.validate_on_submit():
-        # Insert data into DB
-        db = get_db()
-        query = """
-                INSERT INTO [affected_parts]
-                    ([doc_change_id], 
-                    [part_no], 
-                    [description], 
-                    [revision], 
-                    [routing])
-                    VALUES (?, ?, ?, ?, ?);
-                """
-        args = [doc_change_id, part_no, desc, rev, routing]
-        db.execute(query, args)
-        db.commit()
+    # Initialize forms
+    doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
 
-        flash('Part number {} was successfully added.'.format(part_no))
+    if doc_change_affected_parts_form.validate_on_submit():
+        # Save all form data to variables
+        doc_change_id = doc_change_affected_parts_form.doc_change_id.data
+        part_no = doc_change_affected_parts_form.part_no.data
+        new_affected_part = AffectedPart(doc_change_id,
+                                         part_no,
+                                         doc_change_affected_parts_form.desc.data,
+                                         doc_change_affected_parts_form.rev.data,
+                                         doc_change_affected_parts_form.routing.data)
+
+        # Insert data into DB
+        db.session.add(new_affected_part)
+        db.session.commit()
+
+        flash('Part number \'{}\' was successfully added.'.format(part_no))
 
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
@@ -918,39 +979,31 @@ def update_affected_part_no():
 
     :return:
     """
-    doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
-
-    # Save all form data to variables
-    row_id = doc_change_affected_parts_form.id.data
-    doc_change_id = doc_change_affected_parts_form.doc_change_id.data
-    part_no = doc_change_affected_parts_form.part_no.data
-    desc = doc_change_affected_parts_form.desc.data
-    rev = doc_change_affected_parts_form.rev.data
-    routing = doc_change_affected_parts_form.routing.data
+    error = None
 
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
 
-    if doc_change_affected_parts_form.validate_on_submit():
-        # Insert data into DB
-        db = get_db()
-        query = """
-                UPDATE
-                    [affected_parts]
-                SET
-                    [part_no] = ?,
-                    [description] = ?,
-                    [revision] = ?,
-                    [routing] = ?
-                WHERE
-                    [affected_parts].[id] = ?;
-                """
-        args = [part_no, desc, rev, routing, row_id]
-        db.execute(query, args)
-        db.commit()
+    # Initialize forms
+    doc_change_affected_parts_form = DocChangeAffectedPartsForm(request.form, csrf_enabled=False)
 
-    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
+    if doc_change_affected_parts_form.validate_on_submit():
+        # Save all form data to variables
+        affected_part = AffectedPart.query.filter_by(id=doc_change_affected_parts_form.id.data).first()
+        part_no = doc_change_affected_parts_form.part_no.data
+        doc_change_id = doc_change_affected_parts_form.doc_change_id.data
+        affected_part.part_no = part_no
+        affected_part.description = doc_change_affected_parts_form.desc.data
+        affected_part.revision = doc_change_affected_parts_form.rev.data
+        affected_part.routing = doc_change_affected_parts_form.routing.data
+
+        # Update data in DB
+        db.session.commit()
+
+        flash('Part number \'{}\' was successfully updated.'.format(part_no))
+
+    return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/delete_affected_part_no/<int:row_id>/', methods=['POST'])
@@ -968,19 +1021,14 @@ def delete_affected_part_no(row_id):
     # Request arguments
     doc_change_id = request.args.get('doc_change_id')
 
-    # Insert data into DB
-    db = get_db()
-    query = """
-            DELETE FROM
-                [affected_parts]
-            WHERE
-                [affected_parts].[id] = ?;
-            """
-    args = [row_id]
-    db.execute(query, args)
-    db.commit()
+    # Delete data from DB
+    affected_part = AffectedPart.query.filter_by(id=row_id).first()
+    part_no = affected_part.part_no
 
-    flash('Part was successfully deleted.')
+    db.session.delete(affected_part)
+    db.session.commit()
+
+    flash('Part \'{}\' was successfully deleted.'.format(part_no))
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
@@ -994,38 +1042,36 @@ def insert_request():
     """
     error = None
 
-    doc_change_requests_form = DocChangeRequestForm(request.form, csrf_enabled=False)
-
-    # Save all form data to variables
-    doc_change_id = doc_change_requests_form.doc_change_id.data
-    stakeholder_name = doc_change_requests_form.stakeholder_name.data
-    stakeholder_email = doc_change_requests_form.email.data
-    status_id = 1
-    notes = doc_change_requests_form.notes.data
-
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
 
-    if doc_change_requests_form.validate_on_submit():
+    # Initialize forms
+    doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False)
+
+    # Get Request Statuses from DB
+    request_statuses = RequestStatus.query.order_by(RequestStatus.id).all()
+    doc_change_request_form.status_id.choices = [(row.id, row.status) for row in request_statuses]
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_request_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+
+    if doc_change_request_form.validate_on_submit():
+        # Save all form data to variables
+        doc_change_id = doc_change_request_form.doc_change_id.data
+        new_request = Request(doc_change_id,
+                              doc_change_request_form.user_id.data,
+                              doc_change_request_form.status_id.data,
+                              notes=doc_change_request_form.notes.data)
+
         # Insert data into DB
-        db = get_db()
-        query = """
-                INSERT INTO [request]
-                    ([doc_change_id], 
-                    [stakeholder_name], 
-                    [stakeholder_email], 
-                    [status_id], 
-                    [notes])
-                    VALUES (?, ?, ?, ?, ?);
-                """
-        args = [doc_change_id, stakeholder_name, stakeholder_email, status_id, notes]
-        db.execute(query, args)
-        db.commit()
+        db.session.add(new_request)
+        db.session.commit()
 
-        flash('Request stakeholder {} was successfully added.'.format(stakeholder_name))
+        flash('Request stakeholder {} was successfully added.'.format(new_request.user.name))
 
-    # flash_errors(doc_change_requests_form)
+    flash_errors(doc_change_request_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
@@ -1036,39 +1082,46 @@ def update_request():
 
     :return:
     """
-    doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False)
-
-    # Save all form data to variables
-    row_id = doc_change_request_form.id.data
-    doc_change_id = doc_change_request_form.doc_change_id.data
-    stakeholder_name = doc_change_request_form.stakeholder_name.data
-    stakeholder_email = doc_change_request_form.email.data
-    notes = doc_change_request_form.notes.data
+    error = None
 
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
 
+    # Initialize forms
+    doc_change_request_form = DocChangeRequestForm(request.form, csrf_enabled=False)
+
+    # Get Request Statuses from DB
+    request_statuses = RequestStatus.query.order_by(RequestStatus.id).all()
+    doc_change_request_form.status_id.choices = [(row.id, row.status) for row in request_statuses]
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_request_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+
     if doc_change_request_form.validate_on_submit():
+        # Save all form data to variables
+        doc_change_id = doc_change_request_form.doc_change_id.data
+
+        updated_request = Request.query.filter_by(id=doc_change_request_form.id.data).first()
+        updated_request.user_id = doc_change_request_form.user_id.data
+        updated_request.status_id = doc_change_request_form.status_id.data
+        updated_request.notes = doc_change_request_form.notes.data
+
+        if updated_request.status_id > 1:
+            updated_request.approval_date = datetime.today()
+        else:
+            updated_request.approval_date = None
+
         # Insert data into DB
-        db = get_db()
-        query = """
-                UPDATE
-                    [request]
-                SET
-                    [stakeholder_name] = ?,
-                    [stakeholder_email] = ?,
-                    [notes] = ?
-                WHERE
-                    [request].[id] = ?;
-                """
-        args = [stakeholder_name, stakeholder_email, notes, row_id]
-        db.execute(query, args)
-        db.commit()
+        db.session.commit()
 
-        flash('Request stakeholder {} was successfully updated.'.format(stakeholder_name))
+        flash('Request stakeholder {} was successfully updated.'.format(updated_request.user.name))
 
-    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
+        check_doc_change_status(doc_change_id)
+
+    flash_errors(doc_change_request_form)
+    return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/delete_request/<int:row_id>', methods=['POST'])
@@ -1086,19 +1139,16 @@ def delete_request(row_id):
     # Request arguments
     doc_change_id = request.args.get('doc_change_id')
 
-    # Insert data into DB
-    db = get_db()
-    query = """
-                DELETE FROM
-                    [request]
-                WHERE
-                    [request].[id] = ?;
-                """
-    args = [row_id]
-    db.execute(query, args)
-    db.commit()
+    # Delete data from DB
+    request_to_delete = Request.query.filter_by(id=row_id).first()
+    request_name = request_to_delete.user.name
 
-    flash('Request was successfully deleted.')
+    db.session.delete(request_to_delete)
+    db.session.commit()
+
+    flash('Request stakeholder {} was successfully deleted.'.format(request_name))
+
+    check_doc_change_status(doc_change_id)
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
@@ -1112,50 +1162,33 @@ def insert_order():
     """
     error = None
 
-    doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False)
-
-    # Get Document Types from DB
-    query = """
-            SELECT [document_types].[id], 
-                   [document_types].[document_name]
-            FROM   [document_types]
-            ORDER  BY [document_types].[document_name];
-            """
-    args = []
-    order_document_types = query_db(query, args)
-    doc_change_order_form.document_type_id.choices = [(row['id'], row['document_name']) for row in
-                                                      order_document_types]
-
-    # Save all form data to variables
-    doc_change_id = doc_change_order_form.doc_change_id.data
-    document_type_id = doc_change_order_form.document_type_id.data
-    notes = doc_change_order_form.notes.data
-    responsible_name = doc_change_order_form.responsible_name.data
-    responsible_email = doc_change_order_form.responsible_email.data
-    due_date = doc_change_order_form.due_date.data
-    new_revision = doc_change_order_form.new_revision.data
-
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
 
+    # Initialize forms
+    doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False)
+
+    # Get Document Types from DB
+    order_document_types = DocType.query.order_by(DocType.type).all()
+    doc_change_order_form.document_type_id.choices = [(row.id, row.type) for row in order_document_types]
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_order_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+
     if doc_change_order_form.validate_on_submit():
+        # Save all form data to variables
+        doc_change_id = doc_change_order_form.doc_change_id.data
+        order_to_insert = Order(doc_change_id,
+                                doc_change_order_form.document_type_id.data,
+                                doc_change_order_form.user_id.data,
+                                datetime.strptime(doc_change_order_form.due_date.data, '%Y-%m-%d'),
+                                doc_change_order_form.new_revision.data)
+
         # Insert data into DB
-        db = get_db()
-        query = """
-                INSERT INTO [order]
-                    ([doc_change_id],
-                    [document_type_id],
-                    [notes], 
-                    [responsible_name], 
-                    [responsible_email], 
-                    [due_date],
-                    [new_revision])
-                    VALUES (?, ?, ?, ?, ?, ?, ?);
-                """
-        args = [doc_change_id, document_type_id, notes, responsible_name, responsible_email, due_date, new_revision]
-        db.execute(query, args)
-        db.commit()
+        db.session.add(order_to_insert)
+        db.session.commit()
 
         flash('Order was successfully added.')
 
@@ -1170,55 +1203,44 @@ def update_order():
 
     :return:
     """
-    doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False)
-
-    # Get Document Types from DB
-    query = """
-            SELECT [document_types].[id], 
-                   [document_types].[document_name]
-            FROM   [document_types]
-            ORDER  BY [document_types].[document_name];
-            """
-    args = []
-    order_document_types = query_db(query, args)
-    doc_change_order_form.document_type_id.choices = [(row['id'], row['document_name']) for row in
-                                                      order_document_types]
-
-    # Save all form data to variables
-    row_id = doc_change_order_form.id.data
-    doc_change_id = doc_change_order_form.doc_change_id.data
-    document_type_id = doc_change_order_form.document_type_id.data
-    notes = doc_change_order_form.notes.data
-    responsible_name = doc_change_order_form.responsible_name.data
-    responsible_email = doc_change_order_form.responsible_email.data
-    due_date = doc_change_order_form.due_date.data
-    new_revision = doc_change_order_form.new_revision.data
+    error = None
 
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
 
+    # Initialize forms
+    doc_change_order_form = DocChangeOrderForm(request.form, csrf_enabled=False)
+
+    # Get Document Types from DB
+    order_document_types = DocType.query.order_by(DocType.type).all()
+    doc_change_order_form.document_type_id.choices = [(row.id, row.type) for row in order_document_types]
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_order_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+
     if doc_change_order_form.validate_on_submit():
+        # Save all form data to variables
+        doc_change_id = doc_change_order_form.doc_change_id.data
+
+        order_to_update = Order.query.filter_by(id=doc_change_order_form.id.data).first()
+        order_to_update.doc_type_id = doc_change_order_form.document_type_id.data
+        order_to_update.user_id = doc_change_order_form.user_id.data
+        order_to_update.notes = doc_change_order_form.notes.data
+        order_to_update.due_date = datetime.strptime(doc_change_order_form.due_date.data, '%Y-%m-%d')
+        order_to_update.new_revision = doc_change_order_form.new_revision.data
+        if (order_to_update.new_revision != '') and (order_to_update.new_revision is not None):
+            order_to_update.completed_date = datetime.today()
+        else:
+            order_to_update.completed_date = None
+
         # Update data in DB
-        db = get_db()
-        query = """
-                UPDATE
-                    [order]
-                SET
-                    [document_type_id] = ?,
-                    [notes] = ?,
-                    [responsible_name] = ?,
-                    [responsible_email] = ?,
-                    [due_date] = ?,
-                    [new_revision] = ?
-                WHERE
-                    [order].[id] = ?;
-                """
-        args = [document_type_id, notes, responsible_name, responsible_email, due_date, new_revision, row_id]
-        db.execute(query, args)
-        db.commit()
+        db.session.commit()
 
         flash('Order was successfully updated.')
+
+        check_doc_change_status(doc_change_id)
 
     flash_errors(doc_change_order_form)
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
@@ -1240,18 +1262,14 @@ def delete_order(row_id):
     doc_change_id = request.args.get('doc_change_id')
 
     # Insert data into DB
-    db = get_db()
-    query = """
-            DELETE FROM
-                [order]
-            WHERE
-                [order].[id] = ?;
-            """
-    args = [row_id]
-    db.execute(query, args)
-    db.commit()
+    order_to_delete = Order.query.filter_by(id=row_id).first()
+
+    db.session.delete(order_to_delete)
+    db.session.commit()
 
     flash('Order was successfully deleted.')
+
+    check_doc_change_status(doc_change_id)
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
@@ -1265,32 +1283,27 @@ def insert_notice():
     """
     error = None
 
-    doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False)
-
-    # Save all form data to variables
-    doc_change_id = doc_change_notice_form.doc_change_id.data
-    authorize_name = doc_change_notice_form.authorize_name.data
-    authorize_email = doc_change_notice_form.authorize_email.data
-    notes = doc_change_notice_form.notes.data
-
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
 
+    # Initialize forms
+    doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False)
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_notice_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+
     if doc_change_notice_form.validate_on_submit():
+        # Save all form data to variables
+        doc_change_id = doc_change_notice_form.doc_change_id.data
+
+        notice_to_insert = Notice(doc_change_id, doc_change_notice_form.user_id.data,
+                                  notes=doc_change_notice_form.notes.data)
+
         # Insert data into DB
-        db = get_db()
-        query = """
-                    INSERT INTO [notice]
-                        ([doc_change_id], 
-                        [authorize_name], 
-                        [authorize_email], 
-                        [notes])
-                        VALUES (?, ?, ?, ?);
-                    """
-        args = [doc_change_id, authorize_name, authorize_email, notes]
-        db.execute(query, args)
-        db.commit()
+        db.session.add(notice_to_insert)
+        db.session.commit()
 
         flash('Notice was successfully added.')
 
@@ -1305,40 +1318,40 @@ def update_notice():
 
     :return:
     """
-    doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False)
-
-    # Save all form data to variables
-    row_id = doc_change_notice_form.id.data
-    doc_change_id = doc_change_notice_form.doc_change_id.data
-    authorize_name = doc_change_notice_form.authorize_name.data
-    authorize_email = doc_change_notice_form.authorize_email.data
-    notes = doc_change_notice_form.notes.data
+    error = None
 
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
 
+    # Initialize form
+    doc_change_notice_form = DocChangeNoticeForm(request.form, csrf_enabled=False)
+
+    # Get Users from DB
+    users = User.query.order_by(User.name).all()
+    doc_change_notice_form.user_id.choices = [(row.id, '{} ({})'.format(row.name, row.email)) for row in users]
+
     if doc_change_notice_form.validate_on_submit():
+        # Save all form data to variables
+        doc_change_id = doc_change_notice_form.doc_change_id.data
+
+        notice_to_update = Notice.query.filter_by(id=doc_change_notice_form.id.data).first()
+        notice_to_update.user_id = doc_change_notice_form.user_id.data
+        try:
+            notice_to_update.authorize_date = datetime.strptime(doc_change_notice_form.authorize_date.data, '%Y-%m-%d')
+        except ValueError:
+            pass
+        notice_to_update.notes = doc_change_notice_form.notes.data
+
         # Update data in DB
-        db = get_db()
-        query = """
-                    UPDATE
-                        [notice]
-                    SET
-                        [authorize_name] = ?,
-                        [authorize_email] = ?,
-                        [notes] = ?
-                    WHERE
-                        [notice].[id] = ?;
-                    """
-        args = [authorize_name, authorize_email, notes, row_id]
-        db.execute(query, args)
-        db.commit()
+        db.session.commit()
 
         flash('Notice was successfully updated.')
 
+        check_doc_change_status(doc_change_id)
+
     flash_errors(doc_change_notice_form)
-    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
+    return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
 
 
 @app.route('/delete_notice/<int:row_id>', methods=['POST'])
@@ -1349,6 +1362,8 @@ def delete_notice(row_id):
     :param row_id:
     :return:
     """
+    error = None
+
     # Check permissions
     if not session['logged_in'] or not session['can_edit_doc']:
         abort(401)
@@ -1357,21 +1372,42 @@ def delete_notice(row_id):
     doc_change_id = request.args.get('doc_change_id')
 
     # Insert data into DB
-    db = get_db()
-    query = """
-                DELETE FROM
-                    [notice]
-                WHERE
-                    [notice].[id] = ?;
-                """
-    args = [row_id]
-    db.execute(query, args)
-    db.commit()
+    notice_to_delete = Notice.query.filter_by(id=row_id).first()
+    db.session.delete(notice_to_delete)
+    db.session.commit()
 
     flash('Notice was successfully deleted.')
+
+    check_doc_change_status(doc_change_id)
+
+    return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
+
+
+@app.route('/copy_request_to_notice/<int:doc_change_id>', methods=['POST'])
+def copy_request_to_notice(doc_change_id):
+    """
+    Copy all stakeholders from request to notice.
+
+    :param doc_change_id:
+    :return:
+    """
+    query = """
+            INSERT INTO [notice]
+                ([doc_change_id], 
+                [user_id])
+                SELECT [doc_change_id], 
+                   [user_id]
+            FROM   [request]
+            WHERE  [doc_change_id] = :doc_change_id;
+            """
+    args = {'doc_change_id': doc_change_id}
+    db.session.execute(query, args)
+    db.session.commit()
+
+    flash('Request stakeholders successfully copied to Notice.')
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=False)

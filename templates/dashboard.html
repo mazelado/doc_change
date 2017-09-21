@@ -11,6 +11,9 @@
         <h2>Dashboard for {{ session.name }}</h2>
     </div>
 
+{# Show if doc change status = request (1, 2, or 3) and there are no rows in request table #}
+{# Show if doc change status = order (4) and there are no rows in order table #}
+{# Show if doc change status = notice (5) and there are no rows in notice table #}
 {#    <!-- Incomplete Panel -->#}
 {#    <div class="container">#}
 {#        <div class="panel panel-default">#}
@@ -61,7 +64,7 @@
                             <th data-sortable="true" data-align="center">Submit Date</th>
                             <th data-sortable="false" data-align="left">Problem</th>
                             <th data-sortable="false" data-align="left">Proposal</th>
-                            <th data-sortable="false" data-align="left">Affected Part Nos</th>
+{#                            <th data-sortable="false" data-align="left">Affected Part Nos</th>#}
                         </tr>
                         </thead>
                         <tbody>
@@ -69,12 +72,12 @@
                         {% for row in req_results %}
                             <tr>
                                 <td>
-                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a>
                                 </td>
-                                <td>{{ row['submit_date'] }}</td>
-                                <td>{{ row['problem_desc'] }}</td>
-                                <td>{{ row['proposal_desc'] }}</td>
-                                <td>{{ row['part_nos'] }}</td>
+                                <td>{{ row.submit_date }}</td>
+                                <td>{{ row.problem_desc }}</td>
+                                <td>{{ row.proposal_desc }}</td>
+{#                                <td>{{ row.part_nos }}</td>#}
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -104,11 +107,11 @@
                         {% for row in ord_results %}
                             <tr>
                                 <td>
-                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['doc_change_id']) }}">{{ row['doc_change_id'] }}</a>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a>
                                 </td>
-                                <td>{{ row['document_name'] }}</td>
-                                <td>{{ row['notes'] }}</td>
-                                <td>{{ row['due_date'] }}</td>
+                                <td>{{ row.type }}</td>
+                                <td>{{ row.notes }}</td>
+                                <td>{{ row.due_date }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

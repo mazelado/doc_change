@@ -626,14 +626,22 @@ def show_dashboard():
 
     error = None
 
-    # TODO: Show Incomplete Doc Changes (doc_change exists, but affected_part_nos = 0 or requests = 0)
-
-    # Get Incomplete Doc Changes
-    # TODO: Test this query to make sure it works - needs OR for Request and AffectedPart filters
-    # inc_results = DocChange.query.filter_by(status_id=1) \
-    #     .outerjoin(Request).filter_by(doc_change_id="") \
-    #     .outerjoin(AffectedPart).filter_by(doc_change_id="") \
-    #     .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
+    # Get Incomplete Requests
+    query = """
+            SELECT [doc_change].[id], 
+                   [doc_change].[problem_desc], 
+                   [doc_change].[proposal_desc], 
+                   [doc_change].[proposed_implement_date]
+            FROM   [doc_change]
+                   LEFT JOIN [request] ON [request].[doc_change_id] = [doc_change].[id]
+                   LEFT JOIN [affected_part] ON [affected_part].[doc_change_id] = [doc_change].[id]
+            WHERE  ([doc_change].[status_id] = 1)
+                   AND ([doc_change].[submit_by_user_id] = :doc_change_submit_by_user_id)
+                   AND (([request].[id] ISNULL)
+                   OR  ([affected_part].[id] ISNULL));
+            """
+    args = {'doc_change_submit_by_user_id': session['user_id']}
+    inc_req_results = db.session.execute(query, args)
 
     # Get Pending Requests
     query = """
@@ -654,6 +662,8 @@ def show_dashboard():
     args = {'doc_change_status_id': 1, 'request_status_id': 1, 'request_user_id': session['user_id']}
     req_results = db.session.execute(query, args)
 
+    # Get Incomplete Orders
+
     # Get Pending Orders
     query = """
             SELECT [doc_change].[id] AS [doc_change_id], 
@@ -672,6 +682,8 @@ def show_dashboard():
     args = {'doc_change_status_id': 4, 'order_user_id': session['user_id']}
     ord_results = db.session.execute(query, args)
 
+    # Get Incomplete Notices
+
     # Get Pending Notices
     query = """
             SELECT [doc_change].[id] AS [doc_change_id], 
@@ -687,8 +699,8 @@ def show_dashboard():
     args = {'doc_change_status_id': 5, 'notice_user_id': session['user_id']}
     ntc_results = db.session.execute(query, args)
 
-    return render_template('dashboard.html', error=error, req_results=req_results, ord_results=ord_results,
-                           ntc_results=ntc_results)
+    return render_template('dashboard.html', error=error, inc_req_results=inc_req_results, req_results=req_results,
+                           ord_results=ord_results, ntc_results=ntc_results)
 
 
 @app.route('/dashboard_as_admin/')

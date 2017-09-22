@@ -31,7 +31,7 @@
                     {{ render_field(doc_change_form.submit_by_user_id, class='form-control') }}
                     {{ render_field(doc_change_form.submit_date, class='form-control') }}
                 {% endif %}
-                {{ render_field(doc_change_form.problem_desc, class='form-control') }}
+                {{ render_field(doc_change_form.problem_desc, class='form-control', autofocus='') }}
                 {{ render_field(doc_change_form.proposal_desc, class='form-control') }}
                 {{ render_datepicker(doc_change_form.proposed_implement_date, class='form-control') }}
                 {% if doc_change_id == 0 %}

@@ -7,7 +7,7 @@
     </div>
     {% endif %}
     {% from "_formhelpers.html" import render_field %}
-    <form action="{{ url_for('add_doc_change') }}" method=post>
+    <form action="{{ url_for('add_doc_change') }}" method="post">
         {% if new_doc_change %}
         <h2 class="form-heading">Add a New Document Change</h2>
         {% endif %}

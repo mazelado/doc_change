@@ -11,49 +11,51 @@
         <h2>Dashboard for {{ session.name }}</h2>
     </div>
 
-{# Show if doc change status = request (1, 2, or 3) and there are no rows in request table #}
-{# Show if doc change status = order (4) and there are no rows in order table #}
-{# Show if doc change status = notice (5) and there are no rows in notice table #}
-{#    <!-- Incomplete Panel -->#}
-{#    <div class="container">#}
-{#        <div class="panel panel-default">#}
-{#            <div class="panel-heading">#}
-{#                <h4 class="panel-title">Incomplete Document Changes</h4>#}
-{#            </div>#}
-{#            <div class="panel-body">#}
-{#                <div class="table table-responsive">#}
-{#                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">#}
-{#                        <thead>#}
-{#                        <tr>#}
-{#                            <th data-sortable="true" data-align="center">ID</th>#}
-{#                            <th data-sortable="true" data-align="center">Submit Date</th>#}
-{#                            <th data-sortable="false" data-align="left">Problem</th>#}
-{#                            <th data-sortable="false" data-align="left">Proposal</th>#}
-{#                        </tr>#}
-{#                        </thead>#}
-{#                        <tbody>#}
-                        {# TODO: add class="danger" for past due requests #}
-{#                        {% for row in inc_results %}#}
-{#                            <tr>#}
-{#                                <td>#}
-{#                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>#}
-{#                                </td>#}
-{#                                <td>{{ row['submit_date'] }}</td>#}
-{#                                <td>{{ row['problem_desc'] }}</td>#}
-{#                                <td>{{ row['proposal_desc'] }}</td>#}
-{#                            </tr>#}
-{#                        {% endfor %}#}
-{#                        </tbody>#}
-{#                    </table>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div> <!-- /Incomplete Panel -->#}
-
-    <!-- Pending Requests Panel -->
+    {# TODO: Show if doc change status = order (4) and there are no rows in order table #}
+    {# TODO: Show if doc change status = notice (5) and there are no rows in notice table #}
+    <!-- Incomplete Requests Panel -->
     <div class="container">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4 class="panel-title">Pending Requests</h4>
+                <h4 class="panel-title" data-toggle="tooltip"
+                    title="Requests that have either no Affected Part Nos or no Stakeholders"
+                    data-placement="auto left">Incomplete Requests</h4>
+            </div>
+            <div class="panel-body">
+                <div class="table table-responsive">
+                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
+                        <thead>
+                        <tr>
+                            <th data-sortable="true" data-align="center">ID</th>
+                            <th data-sortable="true" data-align="center">Submit Date</th>
+                            <th data-sortable="false" data-align="left">Problem</th>
+                            <th data-sortable="false" data-align="left">Proposal</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {# TODO: add class="danger" for past due requests #}
+                        {% for row in inc_req_results %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
+                                </td>
+                                <td>{{ row['submit_date'] }}</td>
+                                <td>{{ row['problem_desc'] }}</td>
+                                <td>{{ row['proposal_desc'] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- /Incomplete Panel -->
+
+        <!-- Pending Requests Panel -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title" data-toggle="tooltip"
+                    title="Requests that have you as a stakeholder, but have not yet been approved"
+                    data-placement="auto left">Pending Requests</h4>
             </div>
             <div class="panel-body">
                 <div class="table table-responsive">
@@ -89,7 +91,9 @@
         <!-- Pending Orders Panel -->
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4 class="panel-title">Pending Orders</h4>
+                <h4 class="panel-title" data-toggle="tooltip"
+                    title="Orders that have you as responsible for a document, but have not yet been completed"
+                    data-placement="auto left">Pending Orders</h4>
             </div>
             <div class="panel-body">
                 <div class="table table-responsive">
@@ -123,7 +127,9 @@
         <!-- Pending Notices Panel -->
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4 class="panel-title">Pending Notices</h4>
+                <h4 class="panel-title" data-toggle="tooltip"
+                    title="Notices that have you as an authorizer, but have not yet been authorized"
+                    data-placement="auto left">Pending Notices</h4>
             </div>
             <div class="panel-body">
                 <div class="table table-striped table-responsive">

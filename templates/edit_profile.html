@@ -12,9 +12,8 @@
     <div class="container">
         <h2>Edit Profile</h2>
         <form action="{{ url_for('update_user') }}" method=post>
-            {{ render_field(form.username, class='form-control') }}
-            {{ render_field(form.name, class='form-control') }}
             {{ render_field(form.email, class='form-control') }}
+            {{ render_field(form.name, class='form-control') }}
             {{ render_field(form.password, class='form-control') }}
             {{ render_field(form.confirm, class='form-control') }}
             <div class="btn-group pull-right">

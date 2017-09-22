@@ -7,30 +7,31 @@ import sys
 from datetime import datetime
 
 from flask import Flask, request, render_template, session, g, redirect, url_for, abort, flash
-from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required
+from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required, utils
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from passlib.context import CryptContext
 from wtforms import StringField, PasswordField, TextAreaField, HiddenField, SelectField, DateField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, Optional
 
-# Set up Flask
+# Initialize Flask and set some config values
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('CHANGE_FLASK_SETTINGS', silent=True)
 app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = b'\x80\xfd\x11\xef\xad\xe7\x92\x04j1\xcdP\x0b\x0c\xc3\xb8\xf3:\xb6S\xb8o\xb0\xc0'
 
-# Set up SQLAlchemy
+app.config['SECURITY_PASSWORD_HASH'] = 'pbkdf2_sha512'
+app.config['SECURITY_PASSWORD_SALT'] = 'tSFwU8NPMtPK&duND#HMrtEMsQQwQ$#ej58x7yWwpJjdF!hA9x6q5mRET&PU7&2Z'
+
 db_path = os.path.join(app.root_path, 'doc_change_sa.db')
 db_uri = 'sqlite:///{}'.format(db_path)
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-app.config['SECRET_KEY'] = b'\x80\xfd\x11\xef\xad\xe7\x92\x04j1\xcdP\x0b\x0c\xc3\xb8\xf3:\xb6S\xb8o\xb0\xc0'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
-db = SQLAlchemy(app)
 
-# Set up Passlib
-pwd_context = CryptContext(schemes=['pbkdf2_sha256', 'des_crypt'], deprecated='auto')
+# Initialize SQLAlchemy
+db = SQLAlchemy(app)
 
 # SQLAlchemy Models ----------------------------------------------------------------------------------------------------
 roles_users = db.Table('roles_users',
@@ -46,22 +47,20 @@ class Role(db.Model, RoleMixin):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
-    email = db.Column(db.String(120), unique=True)
-    password_hash = db.Column(db.String(90))
+    email = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))
     name = db.Column(db.String(80))
     active = db.Column(db.Boolean())
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, username, password_hash, email, name, active=True):
-        self.username = username
-        self.password_hash = password_hash
+    def __init__(self, email, password, name, active=True):
         self.email = email
+        self.password = password
         self.name = name
         self.active = active
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.email
 
 
 class DocChange(db.Model):
@@ -223,6 +222,33 @@ security = Security(app, user_datastore)
 
 
 # Logic ----------------------------------------------------------------------------------------------------------------
+@app.before_first_request
+def before_first_request():
+    # Create any database tables that don't exist yet
+    db.create_all()
+
+    # Create the Roles 'admin' and 'end-user' unless they already exist
+    user_datastore.find_or_create_role(name='admin', description='Administrator')
+    user_datastore.find_or_create_role(name='end-user', description='End user')
+
+    # Create two Users for testing purposes -- unless they already exists.
+    # In each case, use Flask-Security utility function to encrypt the password.
+    encrypted_password = utils.hash_password('password')
+    if not user_datastore.get_user('mdaleo@skywayprecision.com'):
+        user_datastore.create_user(email='mdaleo@skywayprecision.com', password=encrypted_password)
+    if not user_datastore.get_user('admin@skywayprecision.com'):
+        user_datastore.create_user(email='admin@skywayprecision.com', password=encrypted_password)
+
+    # Commit any database changes; the User and Roles must exist before we can add a Role to the User
+    db.session.commit()
+
+    # Give one User has the "end-user" role, while the other has the "admin" role. (This will have no effect if the
+    # Users already have these Roles.) Again, commit any database changes.
+    user_datastore.add_role_to_user('mdaleo@skywayprecision.com', 'end-user')
+    user_datastore.add_role_to_user('admin@skywayprecision.com', 'admin')
+    db.session.commit()
+
+
 def flash_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
@@ -366,7 +392,7 @@ def show_start():
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
 
 
@@ -402,18 +428,18 @@ def do_login():
     form = LoginForm(request.form, csrf_enabled=False)
 
     if form.validate_on_submit():
-        username_from_form = form.username.data
+        email_from_form = form.email.data
         password_from_form = form.password.data
 
         # Validate login information
-        user = User.query.filter_by(username=username_from_form).first()
+        user = User.query.filter_by(email=email_from_form).first()
 
         # If user is not found or password does not match
-        if user is None or pwd_context.verify(password_from_form, user.password_hash) is False:
-            flash('Invalid username or password.', 'danger')
+        if user is None or utils.verify_password(password_from_form, user.password) is False:
+            flash('Invalid email or password.', 'danger')
         else:
             session['logged_in'] = True
-            session['username'] = user.username
+            session['email'] = user.email
             session['name'] = user.name
             session['user_id'] = user.id
 
@@ -447,7 +473,7 @@ def do_logout():
 
     # Clear session variables
     session.pop('logged_in', None)
-    session.pop('username', None)
+    session.pop('email', None)
     session.pop('name', None)
     session.pop('user_id', None)
     # session.pop('can_view_user', None)
@@ -465,12 +491,11 @@ def do_logout():
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=80)])
-    email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=120), Email()])
+    email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=255), Email()])
     name = StringField('Name', validators=[DataRequired(), Length(min=3, max=80)])
     password = PasswordField('Password',
                              validators=[DataRequired(), EqualTo('confirm', message='Passwords do not match.'),
-                                         Length(min=8, max=20)])
+                                         Length(min=8, max=32)])
     confirm = PasswordField('Confirm Password', validators=[DataRequired()])
 
 
@@ -504,20 +529,20 @@ def insert_user():
     form = RegistrationForm(request.form, csrf_enabled=False)
 
     if form.validate_on_submit():
-        new_user = User(form.username.data, pwd_context.hash(form.password.data), form.email.data, form.name.data)
+        new_user = User(form.email.data, utils.hash_password(form.password.data), form.email.data, form.name.data)
 
         # Check if user already exists
-        existing_user = User.query.filter_by(username=form.username.data, email=form.email.data).first()
+        existing_user = User.query.filter_by(email=form.email.data).first()
 
         if existing_user is not None:
-            flash('Invalid username.', 'danger')
+            flash('Invalid email.', 'danger')
             return render_template('register_user.html', form=form, error=error)
         else:
             # Add user to database
             db.session.add(new_user)
             db.session.commit()
 
-            flash('New user \'{}\' was successfully added.'.format(new_user.username), 'success')
+            flash('New user \'{}\' was successfully added.'.format(new_user.email), 'success')
             return redirect(url_for('show_start'))
 
     return render_template('register_user.html', form=form, error=error)
@@ -538,9 +563,8 @@ def show_edit_user():
     form = RegistrationForm(request.form, csrf_enabled=False)
 
     user_to_show = User.query.filter_by(id=session['user_id']).first()
-    form.username.data = user_to_show.username
-    form.name.data = user_to_show.name
     form.email.data = user_to_show.email
+    form.name.data = user_to_show.name
 
     return render_template('edit_profile.html', error=error, form=form)
 
@@ -560,14 +584,13 @@ def update_user():
     if form.validate_on_submit():
         user_to_update = User.query.filter_by(id=session['user_id']).first()
 
-        user_to_update.username = form.username.data
-        user_to_update.name = form.name.data
         user_to_update.email = form.email.data
-        user_to_update.password = pwd_context.hash(form.password.data)
+        user_to_update.name = form.name.data
+        user_to_update.password = utils.hash_password(form.password.data)
 
         db.session.commit()
 
-        flash('User \'{}\' successfully updated.'.format(user_to_update.username), 'success')
+        flash('User \'{}\' successfully updated.'.format(user_to_update.email), 'success')
 
     flash_errors(form)
     return redirect(url_for('show_edit_user', error=error))
@@ -602,8 +625,6 @@ def show_dashboard():
     """
 
     error = None
-    if not session['logged_in'] or not session['can_view_doc']:
-        abort(401)
 
     # TODO: Show Incomplete Doc Changes (doc_change exists, but affected_part_nos = 0 or requests = 0)
 
@@ -672,8 +693,6 @@ def show_all_doc_changes():
     # https://github.com/wenzhixin/bootstrap-table/issues/821
 
     error = None
-    if not session['logged_in'] or not session['can_view_doc']:
-        abort(401)
 
     # Get all Document Changes
     query = """

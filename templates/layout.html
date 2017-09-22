@@ -61,37 +61,29 @@
                            role="button"
                            aria-haspopup="true" aria-expanded="false">Document Change System <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            {% if session.logged_in and session.can_view_doc %}
+                            {% if current_user.is_authenticated %}
                                 <li><a href="{{ url_for('show_dashboard') }}">Dashboard</a></li>
-                            {% endif %}
-                            {% if session.logged_in and session.can_view_doc and session.can_add_doc %}
                                 <li role="separator" class="divider"></li>
-                            {% endif %}
-                            {% if session.logged_in and session.can_add_doc %}
                                 <li><a href="{{ url_for('show_doc_change', doc_change_id=0) }}">New Document Change</a>
                                 </li>
-                            {% endif %}
-                            {% if session.logged_in and session.can_view_doc %}
                                 <li><a href="{{ url_for('show_all_doc_changes') }}">View All Document Changes</a></li>
                             {% endif %}
                         </ul>
                     </li>
-                    {% if not session.logged_in %}
+                    {% if not current_user.is_authenticated %}
                         <li><a href="{{ url_for('show_login') }}">Log In</a></li>
                     {% else %}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-haspopup="true" aria-expanded="false">{{ session.name }} <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{{ url_for('update_user') }}">Edit Profile</a></li>
+                                <li><a href="{{ url_for('show_edit_user') }}">Edit Profile</a></li>
                                 <li role="separator" class="divider"></li>
-                                {% if session.can_add_user %}
+                                {% if current_user.is_authenticated and current_user.has_role('admin') %}
                                     <li><a href="{{ url_for('show_register_user') }}">Add a User</a></li>
-                                {% endif %}
-                                {% if session.can_edit_user %}
                                     <li><a href="{{ url_for('show_edit_user') }}">Edit Users*</a></li>
+                                    <li role="separator" class="divider"></li>
                                 {% endif %}
-                                <li role="separator" class="divider"></li>
                                 <li><a href="{{ url_for('do_logout') }}">Log Out</a></li>
                             </ul>
                         </li>

@@ -9,7 +9,6 @@
         {% from "_formhelpers.html" import render_field %}
         <form class="form-signin" action="{{ url_for('insert_user') }}" method=post>
             <h2 class="form-heading">Register a New User</h2>
-            {{ render_field(form.username, class='form-control') }}
             {{ render_field(form.email, class='form-control') }}
             {{ render_field(form.name, class='form-control') }}
             {{ render_field(form.password, class='form-control') }}

@@ -107,11 +107,11 @@
                         {% for row in ord_results %}
                             <tr>
                                 <td>
-                                    <a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['doc_change_id']) }}">{{ row['doc_change_id'] }}</a>
                                 </td>
-                                <td>{{ row.type }}</td>
-                                <td>{{ row.notes }}</td>
-                                <td>{{ row.due_date }}</td>
+                                <td>{{ row['doc_type_type'] }}</td>
+                                <td>{{ row['order_notes'] }}</td>
+                                <td>{{ row['order_due_date'] }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -139,9 +139,9 @@
                         {% for row in ntc_results %}
                             <tr>
                                 <td>
-                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
+                                    <a href="{{ url_for('show_doc_change', doc_change_id = row['doc_change_id']) }}">{{ row['doc_change_id'] }}</a>
                                 </td>
-                                <td>{{ row['proposed_implement_date'] }}</td>
+                                <td>{{ row['doc_change_proposed_implement_date'] }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a19d2574-0afa-4bc2-935a-d2277b16047c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/security/login_user.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc_change.py" afterPath="$PROJECT_DIR$/doc_change.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/edit_profile.html" afterPath="$PROJECT_DIR$/templates/edit_profile.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/layout.html" afterPath="$PROJECT_DIR$/templates/layout.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/login.html" afterPath="$PROJECT_DIR$/templates/login.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/register_user.html" afterPath="$PROJECT_DIR$/templates/register_user.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/dashboard.html" afterPath="$PROJECT_DIR$/templates/dashboard.html" />
     </list>
     <manually-removed-from-ignored>
       <directory path=".idea/" />
@@ -25,7 +22,7 @@
   </component>
   <component name="ChangesViewManager" show_ignored="true" />
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/doc_change$doc_change.coverage" NAME="doc_change Coverage Results" MODIFIED="1506093764526" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/doc_change$doc_change.coverage" NAME="doc_change Coverage Results" MODIFIED="1506106663503" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -43,14 +40,19 @@
       <file leaf-file-name="doc_change.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/doc_change.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="694" column="16" lean-forward="true" selection-start-line="694" selection-start-column="16" selection-end-line="694" selection-end-column="16" />
+            <state relative-caret-position="425">
+              <caret line="650" column="38" lean-forward="false" selection-start-line="650" selection-start-column="38" selection-end-line="650" selection-end-column="38" />
               <folding>
                 <element signature="e#161#170#0" expanded="true" />
-                <marker date="1506093592092" expanded="true" signature="23290:24095" ph="SELECT [doc_... doc_change" />
-                <marker date="1506093592092" expanded="true" signature="25512:26215" ph="SELECT [doc_... doc_change" />
-                <marker date="1506093592092" expanded="true" signature="51509:51742" ph="INSERT INTO [notice]... " />
-                <marker date="1506093592092" expanded="true" signature="51608:51742" ph="SELECT [doc_... request" />
+                <marker date="1506106761979" expanded="true" signature="23040:23845" ph="SELECT [doc_... doc_change" />
+                <marker date="1506106761979" expanded="true" signature="23040:23884" ph="SELECT [doc_... doc_change" />
+                <marker date="1506106761979" expanded="true" signature="24120:24764" ph="SELECT [doc_... doc_change" />
+                <marker date="1506106761979" expanded="true" signature="24120:24803" ph="SELECT [doc_... doc_change" />
+                <marker date="1506106761979" expanded="true" signature="25014:25514" ph="SELECT [doc_... doc_change" />
+                <marker date="1506106761979" expanded="true" signature="25014:25553" ph="SELECT [doc_... doc_change" />
+                <marker date="1506106761979" expanded="true" signature="26424:27127" ph="SELECT [doc_... doc_change" />
+                <marker date="1506106761979" expanded="true" signature="52421:52654" ph="INSERT INTO [notice]... " />
+                <marker date="1506106761979" expanded="true" signature="52520:52654" ph="SELECT [doc_... request" />
               </folding>
             </state>
           </provider>
@@ -64,6 +66,16 @@
               <folding>
                 <marker date="1506093755066" expanded="true" signature="6424:6434" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dashboard.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="453">
+              <caret line="143" column="55" lean-forward="false" selection-start-line="143" selection-start-column="55" selection-end-line="143" selection-end-column="55" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -108,8 +120,8 @@
       <find>username</find>
       <find>password_hash</find>
       <find>hash</find>
-      <find>if not session['logged_in']</find>
       <find>session.</find>
+      <find>if not session['logged_in']</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -133,15 +145,15 @@
         <option value="$PROJECT_DIR$/static/css/crt.css" />
         <option value="$PROJECT_DIR$/templates/_formhelpers.html" />
         <option value="$PROJECT_DIR$/main.py" />
-        <option value="$PROJECT_DIR$/templates/dashboard.html" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/templates/view_all.html" />
         <option value="$PROJECT_DIR$/templates/doc_change.html" />
         <option value="$PROJECT_DIR$/templates/edit_profile.html" />
         <option value="$PROJECT_DIR$/templates/login.html" />
         <option value="$PROJECT_DIR$/templates/register_user.html" />
-        <option value="$PROJECT_DIR$/doc_change.py" />
         <option value="$PROJECT_DIR$/templates/layout.html" />
+        <option value="$PROJECT_DIR$/templates/dashboard.html" />
+        <option value="$PROJECT_DIR$/doc_change.py" />
       </list>
     </option>
   </component>
@@ -357,7 +369,14 @@
       <option name="project" value="LOCAL" />
       <updated>1506030325750</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Flask-Security kind of working">
+      <created>1506093819790</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1506093819790</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TodoView">
@@ -380,11 +399,11 @@
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26279318" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26279318" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963988" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2553305" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2553305" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -413,7 +432,8 @@
     <MESSAGE value="Added check_doc_change_status(). Ready for release." />
     <MESSAGE value="Converted to Flask-SQLAlchemy" />
     <MESSAGE value="Basic Flask-Security implemented." />
-    <option name="LAST_COMMIT_MESSAGE" value="Basic Flask-Security implemented." />
+    <MESSAGE value="Flask-Security kind of working" />
+    <option name="LAST_COMMIT_MESSAGE" value="Flask-Security kind of working" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -454,10 +474,15 @@
           <caret line="420" column="36" lean-forward="false" selection-start-line="420" selection-start-column="36" selection-end-line="420" selection-end-column="36" />
           <folding>
             <element signature="e#161#170#0" expanded="true" />
-            <marker date="1506093592092" expanded="true" signature="23290:24095" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="25512:26215" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="51509:51742" ph="INSERT INTO [notice]... " />
-            <marker date="1506093592092" expanded="true" signature="51608:51742" ph="SELECT [doc_... request" />
+            <marker date="1506106761979" expanded="true" signature="23040:23845" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="23040:23884" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24764" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24803" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25514" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25553" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="26424:27127" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="52421:52654" ph="INSERT INTO [notice]... " />
+            <marker date="1506106761979" expanded="true" signature="52520:52654" ph="SELECT [doc_... request" />
           </folding>
         </state>
       </provider>
@@ -492,10 +517,15 @@
           <caret line="557" column="107" lean-forward="false" selection-start-line="557" selection-start-column="107" selection-end-line="557" selection-end-column="107" />
           <folding>
             <element signature="e#161#170#0" expanded="true" />
-            <marker date="1506093592092" expanded="true" signature="23290:24095" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="25512:26215" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="51509:51742" ph="INSERT INTO [notice]... " />
-            <marker date="1506093592092" expanded="true" signature="51608:51742" ph="SELECT [doc_... request" />
+            <marker date="1506106761979" expanded="true" signature="23040:23845" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="23040:23884" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24764" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24803" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25514" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25553" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="26424:27127" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="52421:52654" ph="INSERT INTO [notice]... " />
+            <marker date="1506106761979" expanded="true" signature="52520:52654" ph="SELECT [doc_... request" />
           </folding>
         </state>
       </provider>
@@ -539,10 +569,15 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#161#170#0" expanded="true" />
-            <marker date="1506093592092" expanded="true" signature="23290:24095" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="25512:26215" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="51509:51742" ph="INSERT INTO [notice]... " />
-            <marker date="1506093592092" expanded="true" signature="51608:51742" ph="SELECT [doc_... request" />
+            <marker date="1506106761979" expanded="true" signature="23040:23845" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="23040:23884" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24764" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24803" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25514" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25553" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="26424:27127" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="52421:52654" ph="INSERT INTO [notice]... " />
+            <marker date="1506106761979" expanded="true" signature="52520:52654" ph="SELECT [doc_... request" />
           </folding>
         </state>
       </provider>
@@ -578,10 +613,15 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#161#170#0" expanded="true" />
-            <marker date="1506093592092" expanded="true" signature="23290:24095" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="25512:26215" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="51509:51742" ph="INSERT INTO [notice]... " />
-            <marker date="1506093592092" expanded="true" signature="51608:51742" ph="SELECT [doc_... request" />
+            <marker date="1506106761979" expanded="true" signature="23040:23845" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="23040:23884" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24764" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24803" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25514" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25553" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="26424:27127" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="52421:52654" ph="INSERT INTO [notice]... " />
+            <marker date="1506106761979" expanded="true" signature="52520:52654" ph="SELECT [doc_... request" />
           </folding>
         </state>
       </provider>
@@ -602,10 +642,15 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#161#170#0" expanded="true" />
-            <marker date="1506093592092" expanded="true" signature="23290:24095" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="25512:26215" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="51509:51742" ph="INSERT INTO [notice]... " />
-            <marker date="1506093592092" expanded="true" signature="51608:51742" ph="SELECT [doc_... request" />
+            <marker date="1506106761979" expanded="true" signature="23040:23845" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="23040:23884" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24764" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24803" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25514" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25553" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="26424:27127" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="52421:52654" ph="INSERT INTO [notice]... " />
+            <marker date="1506106761979" expanded="true" signature="52520:52654" ph="SELECT [doc_... request" />
           </folding>
         </state>
       </provider>
@@ -626,10 +671,15 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#161#170#0" expanded="true" />
-            <marker date="1506093592092" expanded="true" signature="23290:24095" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="25512:26215" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="51509:51742" ph="INSERT INTO [notice]... " />
-            <marker date="1506093592092" expanded="true" signature="51608:51742" ph="SELECT [doc_... request" />
+            <marker date="1506106761979" expanded="true" signature="23040:23845" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="23040:23884" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24764" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24803" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25514" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25553" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="26424:27127" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="52421:52654" ph="INSERT INTO [notice]... " />
+            <marker date="1506106761979" expanded="true" signature="52520:52654" ph="SELECT [doc_... request" />
           </folding>
         </state>
       </provider>
@@ -756,14 +806,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
-          <caret line="67" column="29" lean-forward="true" selection-start-line="67" selection-start-column="29" selection-end-line="67" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="680">
@@ -854,16 +896,29 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="453">
+          <caret line="143" column="55" lean-forward="false" selection-start-line="143" selection-start-column="55" selection-end-line="143" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/doc_change.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="694" column="16" lean-forward="true" selection-start-line="694" selection-start-column="16" selection-end-line="694" selection-end-column="16" />
+        <state relative-caret-position="425">
+          <caret line="650" column="38" lean-forward="false" selection-start-line="650" selection-start-column="38" selection-end-line="650" selection-end-column="38" />
           <folding>
             <element signature="e#161#170#0" expanded="true" />
-            <marker date="1506093592092" expanded="true" signature="23290:24095" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="25512:26215" ph="SELECT [doc_... doc_change" />
-            <marker date="1506093592092" expanded="true" signature="51509:51742" ph="INSERT INTO [notice]... " />
-            <marker date="1506093592092" expanded="true" signature="51608:51742" ph="SELECT [doc_... request" />
+            <marker date="1506106761979" expanded="true" signature="23040:23845" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="23040:23884" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24764" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="24120:24803" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25514" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="25014:25553" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="26424:27127" ph="SELECT [doc_... doc_change" />
+            <marker date="1506106761979" expanded="true" signature="52421:52654" ph="INSERT INTO [notice]... " />
+            <marker date="1506106761979" expanded="true" signature="52520:52654" ph="SELECT [doc_... request" />
           </folding>
         </state>
       </provider>

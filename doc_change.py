@@ -636,9 +636,6 @@ def show_dashboard():
     #     .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
 
     # Get Pending Requests
-    # req_results = DocChange.query.filter_by(status_id=1) \
-    #     .join(Request).filter_by(status_id=1, user_id=session['user_id']) \
-    #     .with_entities(DocChange.id, DocChange.submit_date, DocChange.problem_desc, DocChange.proposal_desc)
     query = """
             SELECT [doc_change].[id] AS [doc_change_id], 
                    [doc_change].[submit_date] AS [doc_change_submit_date], 
@@ -651,21 +648,44 @@ def show_dashboard():
             WHERE  [doc_change].[status_id] = :doc_change_status_id
                    AND [request].[status_id] = :request_status_id
                    AND [request].[user_id] = :request_user_id
-            GROUP  BY [doc_change].[id];            
+            GROUP  BY [doc_change].[id]
+            ORDER BY [doc_change].[id];            
             """
     args = {'doc_change_status_id': 1, 'request_status_id': 1, 'request_user_id': session['user_id']}
     req_results = db.session.execute(query, args)
 
     # Get Pending Orders
-    ord_results = DocChange.query.filter_by(status_id=4) \
-        .join(Order).filter_by(user_id=session['user_id'], completed_date="") \
-        .join(DocType) \
-        .with_entities(DocChange.id, DocType.type, Order.notes, Order.due_date)
+    query = """
+            SELECT [doc_change].[id] AS [doc_change_id], 
+                   [doc_type].[type] AS [doc_type_type], 
+                   [order].[notes] AS [order_notes], 
+                   [order].[due_date] AS [order_due_date]
+            FROM   [doc_change]
+                   JOIN [order] ON [doc_change].[id] = [order].[doc_change_id]
+                   JOIN [doc_type] ON [doc_type].[id] = [order].[doc_type_id]
+            WHERE  [doc_change].[status_id] = :doc_change_status_id
+                   AND [order].[user_id] = :order_user_id
+                   AND (("order".[completed_date] = "")
+                   OR  ("order".[completed_date] ISNULL))
+            ORDER BY [doc_change].[id];            
+            """
+    args = {'doc_change_status_id': 4, 'order_user_id': session['user_id']}
+    ord_results = db.session.execute(query, args)
 
     # Get Pending Notices
-    ntc_results = DocChange.query.filter_by(status_id=5) \
-        .join(Notice).filter_by(user_id=session['user_id'], authorize_date='') \
-        .with_entities(DocChange.id, DocChange.proposed_implement_date)
+    query = """
+            SELECT [doc_change].[id] AS [doc_change_id], 
+                   [doc_change].[proposed_implement_date] AS [doc_change_proposed_implement_date]
+            FROM   [doc_change]
+                   JOIN [notice] ON [doc_change].[id] = [notice].[doc_change_id]
+            WHERE  [doc_change].[status_id] = :doc_change_status_id
+                   AND [notice].[user_id] = :notice_user_id
+                   AND (([notice].[authorize_date] = "")
+                   OR  ([notice].[authorize_date] ISNULL))
+            ORDER BY [doc_change].[id];
+            """
+    args = {'doc_change_status_id': 5, 'notice_user_id': session['user_id']}
+    ntc_results = db.session.execute(query, args)
 
     return render_template('dashboard.html', error=error, req_results=req_results, ord_results=ord_results,
                            ntc_results=ntc_results)

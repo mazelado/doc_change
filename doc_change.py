@@ -920,6 +920,7 @@ def insert_doc_change():
     # Get Document Change Statuses from DB
     doc_change_statuses = DocChangeStatus.query.order_by(DocChangeStatus.id).all()
     doc_change_form.status_id.choices = [(row.id, row.status) for row in doc_change_statuses]
+    doc_change_form.status_id.data = 1
 
     # Get Users from DB
     users = User.query.order_by(User.name).all()
@@ -928,7 +929,6 @@ def insert_doc_change():
 
     if doc_change_form.validate_on_submit():
         # Save data to variables
-        doc_change_form.status_id.data = 1
         new_doc_change = DocChange(doc_change_form.status_id.data,
                                    datetime.today(),
                                    session['user_id'],
@@ -1216,6 +1216,7 @@ def insert_order():
                                 doc_change_order_form.user_id.data,
                                 datetime.strptime(doc_change_order_form.due_date.data, '%Y-%m-%d'),
                                 doc_change_order_form.new_revision.data)
+        order_to_insert.notes = doc_change_order_form.notes.data
 
         # Insert data into DB
         db.session.add(order_to_insert)

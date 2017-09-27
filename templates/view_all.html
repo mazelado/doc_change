@@ -25,12 +25,12 @@
                 <tbody>
                 {% for row in rows %}
                     <tr>
-                        <td><a href="{{ url_for('show_doc_change', doc_change_id = row['doc_change_id']) }}">{{ row['doc_change_id'] }}</a></td>
-                        <td>{{ row['doc_change_status_status'] }}</td>
-                        <td>{{ row['doc_change_submit_date'] }}</td>
-                        <td>{{ row['doc_change_problem_desc'] }}</td>
-                        <td>{{ row['doc_change_proposal_desc'] }}</td>
-                        <td>{{ row['part_nos'] }}</td>
+                        <td><a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a></td>
+                        <td>{{ row.status }}</td>
+                        <td>{{ row.submit_date }}</td>
+                        <td>{{ row.problem_desc }}</td>
+                        <td>{{ row.proposal_desc }}</td>
+                        <td>{{ row[5] }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

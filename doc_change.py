@@ -9,8 +9,9 @@ from datetime import datetime
 from flask import Flask, request, render_template, session, g, redirect, url_for, abort, flash
 from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required, utils
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
+from sqlalchemy.sql import func
 from flask_wtf import FlaskForm
-from passlib.context import CryptContext
 from wtforms import StringField, PasswordField, TextAreaField, HiddenField, SelectField, DateField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, Optional
 
@@ -476,15 +477,6 @@ def do_logout():
     session.pop('email', None)
     session.pop('name', None)
     session.pop('user_id', None)
-    # session.pop('can_view_user', None)
-    # session.pop('can_add_user', None)
-    # session.pop('can_edit_user', None)
-    # session.pop('can_delete_user', None)
-    # session.pop('can_view_doc', None)
-    # session.pop('can_add_doc', None)
-    # session.pop('can_edit_doc', None)
-    # session.pop('can_delete_doc', None)
-    # session.pop('can_send_doc', None)
 
     flash('{} logged out.'.format(name), 'info')
     return redirect(url_for('show_start'))
@@ -627,80 +619,70 @@ def show_dashboard():
     error = None
 
     # Get Incomplete Requests
-    query = """
-            SELECT [doc_change].[id], 
-                   [doc_change].[problem_desc], 
-                   [doc_change].[proposal_desc], 
-                   [doc_change].[proposed_implement_date]
-            FROM   [doc_change]
-                   LEFT JOIN [request] ON [request].[doc_change_id] = [doc_change].[id]
-                   LEFT JOIN [affected_part] ON [affected_part].[doc_change_id] = [doc_change].[id]
-            WHERE  ([doc_change].[status_id] = 1)
-                   AND ([doc_change].[submit_by_user_id] = :doc_change_submit_by_user_id)
-                   AND (([request].[id] ISNULL)
-                   OR  ([affected_part].[id] ISNULL));
-            """
-    args = {'doc_change_submit_by_user_id': session['user_id']}
-    inc_req_results = db.session.execute(query, args)
+    inc_req_results = DocChange.query \
+        .filter(DocChange.status_id == 1) \
+        .filter(DocChange.submit_by_user_id == session['user_id']) \
+        .outerjoin(Request) \
+        .outerjoin(AffectedPart) \
+        .filter(or_(Request.id == None, AffectedPart.id == None)) \
+        .all()
 
-    # Get Pending Requests
-    query = """
-            SELECT [doc_change].[id] AS [doc_change_id], 
-                   [doc_change].[submit_date] AS [doc_change_submit_date], 
-                   [doc_change].[problem_desc] AS [doc_change_problem_desc], 
-                   [doc_change].[proposal_desc] AS [doc_change_proposal_desc], 
-                   GROUP_CONCAT ([affected_part].[part_no], ", ") AS [part_nos]
-            FROM   [doc_change]
-                   JOIN [request] ON [doc_change].[id] = [request].[doc_change_id]
-                   JOIN [affected_part] ON [doc_change].[id] = [affected_part].[doc_change_id]
-            WHERE  [doc_change].[status_id] = :doc_change_status_id
-                   AND [request].[status_id] = :request_status_id
-                   AND [request].[user_id] = :request_user_id
-            GROUP  BY [doc_change].[id]
-            ORDER BY [doc_change].[id];            
-            """
-    args = {'doc_change_status_id': 1, 'request_status_id': 1, 'request_user_id': session['user_id']}
-    req_results = db.session.execute(query, args)
+    # Get Pending Requests►
+    req_results = DocChange.query \
+        .filter(DocChange.status_id == 1) \
+        .join(Request) \
+        .join(AffectedPart) \
+        .filter(Request.status_id == 1) \
+        .filter(Request.user_id == session['user_id']) \
+        .group_by(DocChange.id) \
+        .order_by(DocChange.id) \
+        .with_entities(DocChange.id,
+                       DocChange.submit_date,
+                       DocChange.problem_desc,
+                       DocChange.proposal_desc,
+                       func.group_concat(AffectedPart.part_no, ', ')
+                       ) \
+        .all()
 
     # Get Incomplete Orders
+    inc_ord_results = DocChange.query \
+        .filter(DocChange.status_id == 4) \
+        .filter(DocChange.submit_by_user_id == session['user_id']) \
+        .outerjoin(Order) \
+        .filter(Order.id == None) \
+        .all()
 
     # Get Pending Orders
-    query = """
-            SELECT [doc_change].[id] AS [doc_change_id], 
-                   [doc_type].[type] AS [doc_type_type], 
-                   [order].[notes] AS [order_notes], 
-                   [order].[due_date] AS [order_due_date]
-            FROM   [doc_change]
-                   JOIN [order] ON [doc_change].[id] = [order].[doc_change_id]
-                   JOIN [doc_type] ON [doc_type].[id] = [order].[doc_type_id]
-            WHERE  [doc_change].[status_id] = :doc_change_status_id
-                   AND [order].[user_id] = :order_user_id
-                   AND (("order".[completed_date] = "")
-                   OR  ("order".[completed_date] ISNULL))
-            ORDER BY [doc_change].[id];            
-            """
-    args = {'doc_change_status_id': 4, 'order_user_id': session['user_id']}
-    ord_results = db.session.execute(query, args)
+    ord_results = DocChange.query \
+        .filter(DocChange.status_id == 4) \
+        .join(Order) \
+        .filter(Order.user_id == session['user_id']) \
+        .filter(or_(Order.completed_date == '', Order.completed_date == None)) \
+        .join(DocType) \
+        .order_by(DocChange.id) \
+        .add_columns(DocType.type, Order.notes, Order.due_date) \
+        .all()
 
     # Get Incomplete Notices
+    inc_ntc_results = DocChange.query \
+        .filter(DocChange.status_id == 5) \
+        .filter(DocChange.submit_by_user_id == session['user_id']) \
+        .outerjoin(Notice) \
+        .filter(Notice.id == None) \
+        .all()
 
     # Get Pending Notices
-    query = """
-            SELECT [doc_change].[id] AS [doc_change_id], 
-                   [doc_change].[proposed_implement_date] AS [doc_change_proposed_implement_date]
-            FROM   [doc_change]
-                   JOIN [notice] ON [doc_change].[id] = [notice].[doc_change_id]
-            WHERE  [doc_change].[status_id] = :doc_change_status_id
-                   AND [notice].[user_id] = :notice_user_id
-                   AND (([notice].[authorize_date] = "")
-                   OR  ([notice].[authorize_date] ISNULL))
-            ORDER BY [doc_change].[id];
-            """
-    args = {'doc_change_status_id': 5, 'notice_user_id': session['user_id']}
-    ntc_results = db.session.execute(query, args)
+    ntc_results = DocChange.query \
+        .filter(DocChange.status_id == 5) \
+        .join(Notice) \
+        .filter(Notice.user_id == session['user_id']) \
+        .filter(or_(Notice.authorize_date == '', Notice.authorize_date == None)) \
+        .order_by(DocChange.id) \
+        .all()
 
     return render_template('dashboard.html', error=error, inc_req_results=inc_req_results, req_results=req_results,
-                           ord_results=ord_results, ntc_results=ntc_results)
+                           inc_ord_results=inc_ord_results, ord_results=ord_results, inc_ntc_results=inc_ntc_results,
+                           ntc_results=ntc_results)
 
 
 @app.route('/dashboard_as_admin/')
@@ -727,20 +709,18 @@ def show_all_doc_changes():
     error = None
 
     # Get all Document Changes
-    query = """
-            SELECT [doc_change].[id] AS [doc_change_id],
-                   [doc_change_status].[status] AS [doc_change_status_status],
-                   [doc_change].[submit_date] AS [doc_change_submit_date], 
-                   [doc_change].[problem_desc] AS [doc_change_problem_desc], 
-                   [doc_change].[proposal_desc] AS [doc_change_proposal_desc], 
-                   GROUP_CONCAT ([affected_part].[part_no], ", ") AS [part_nos]
-            FROM   [doc_change]
-                   JOIN [doc_change_status] ON [doc_change].[status_id] = [doc_change_status].[id]
-                   JOIN [affected_part] ON [doc_change].[id] = [affected_part].[doc_change_id]
-            GROUP  BY [doc_change].[id];            
-            """
-    args = {'doc_change_status_id': 1, 'request_status_id': 1, 'request_user_id': session['user_id']}
-    rows = db.session.execute(query, args)
+    rows = DocChange.query \
+        .join(DocChangeStatus) \
+        .join(AffectedPart) \
+        .group_by(DocChange.id) \
+        .order_by(DocChange.id) \
+        .with_entities(DocChange.id,
+                       DocChangeStatus.status,
+                       DocChange.submit_date,
+                       DocChange.problem_desc,
+                       DocChange.proposal_desc,
+                       func.group_concat(AffectedPart.part_no, ', ')) \
+        .all()
 
     return render_template('view_all.html', error=error, rows=rows)
 
@@ -1406,17 +1386,17 @@ def copy_request_to_notice(doc_change_id):
     :param doc_change_id:
     :return:
     """
-    query = """
-            INSERT INTO [notice]
-                ([doc_change_id], 
-                [user_id])
-                SELECT [doc_change_id], 
-                   [user_id]
-            FROM   [request]
-            WHERE  [doc_change_id] = :doc_change_id;
-            """
-    args = {'doc_change_id': doc_change_id}
-    db.session.execute(query, args)
+    # Get stakeholders to copy
+    stakeholders = Request.query \
+        .filter(Request.doc_change_id == doc_change_id) \
+        .with_entities(Request.doc_change_id,
+                       Request.user_id)
+
+    # Add stakeholders to Notice
+    for stakeholder in stakeholders:
+        notice_to_add = Notice(doc_change_id, stakeholder.user_id)
+        db.session.add(notice_to_add)
+
     db.session.commit()
 
     flash('Request stakeholders successfully copied to Notice.', 'success')

@@ -1,18 +1,29 @@
 # TODO: Improvement - break into modules (views separated)
 # TODO: Improvement - use Flask-RESTful to create REST API
 # TODO: Try Django to see how it compares
+# TODO: Try Materialize (http://materializecss.com)
+# - Replace Bootstrap-table with tablesorter with Materialize theme (https://mottie.github.io/tablesorter/docs/example-option-theme-materialize.html)
+# - Alerts: http://materializecss.com/cards.html, http://demo.geekslabs.com/materialize-v1.0/ui-alerts.html
+# - Collapsible Panels: http://materializecss.com/collapsible.html
+# - Datepicker: http://materializecss.com/forms.html#date-picker
+# - Glyphicons: http://materializecss.com/icons.html
+# - Modals: http://materializecss.com/modals.html#!
+# - Navbar: http://materializecss.com/navbar.html
+# - Tooltips: http://materializecss.com/dialogs.html#tooltip
 
 import os
 import sys
 from datetime import datetime
 
 from flask import Flask, request, render_template, session, g, redirect, url_for, abort, flash
-from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required, utils
+from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required, utils, \
+    roles_required
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from sqlalchemy.sql import func
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, HiddenField, SelectField, DateField
+from wtforms import StringField, PasswordField, TextAreaField, HiddenField, SelectField, DateField, BooleanField, \
+    IntegerField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, Optional
 
 # Initialize Flask and set some config values
@@ -33,6 +44,13 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
+
+# Alert Colors
+ALERT_NEWS = 'light-blue'
+ALERT_INFO = 'deep-purple'
+ALERT_SUCCESS = 'green'
+ALERT_DANGER = 'red'
+ALERT_WARNING = 'orange'
 
 # SQLAlchemy Models ----------------------------------------------------------------------------------------------------
 roles_users = db.Table('roles_users',
@@ -260,7 +278,7 @@ def flash_errors(form):
             flash(u"Error in the %s field - %s" % (
                 getattr(form, field).label.text,
                 error
-            ), 'danger')
+            ), ALERT_DANGER)
 
 
 def check_doc_change_status(doc_change_id):
@@ -352,7 +370,7 @@ def check_doc_change_status(doc_change_id):
     doc_change.status_id = updated_status_id
     db.session.commit()
 
-    flash('Document Change {} status updated.'.format(doc_change_id), 'success')
+    flash('Document Change {} status updated.'.format(doc_change_id), ALERT_SUCCESS)
 
     return updated_status_id
 
@@ -437,25 +455,14 @@ def do_login():
 
         # If user is not found or password does not match
         if user is None or utils.verify_password(password_from_form, user.password) is False:
-            flash('Invalid email or password.', 'danger')
+            flash('Invalid email or password.', ALERT_DANGER)
         else:
             session['logged_in'] = True
             session['email'] = user.email
             session['name'] = user.name
             session['user_id'] = user.id
 
-            # Get user permissions
-            # session['can_view_user'] = user.can_view_user
-            # session['can_add_user'] = user.can_add_user
-            # session['can_edit_user'] = user.can_edit_user
-            # session['can_delete_user'] = user.can_delete_user
-            # session['can_view_doc'] = user.can_view_doc
-            # session['can_add_doc'] = user.can_add_doc
-            # session['can_edit_doc'] = user.can_edit_doc
-            # session['can_delete_doc'] = user.can_delete_doc
-            # session['can_send_doc'] = user.can_send_doc
-
-            flash('Logged in as {}.'.format(session['name']), 'success')
+            flash('Logged in as {}.'.format(session['name']), ALERT_SUCCESS)
             return redirect(url_for('show_dashboard'))
 
     flash_errors(form)
@@ -478,21 +485,26 @@ def do_logout():
     session.pop('name', None)
     session.pop('user_id', None)
 
-    flash('{} logged out.'.format(name), 'info')
+    flash('{} logged out.'.format(name), ALERT_INFO)
     return redirect(url_for('show_start'))
 
 
 class RegistrationForm(FlaskForm):
+    id = HiddenField('User ID')
     email = StringField('Email Address', validators=[DataRequired(), Length(min=6, max=255), Email()])
     name = StringField('Name', validators=[DataRequired(), Length(min=3, max=80)])
     password = PasswordField('Password',
                              validators=[DataRequired(), EqualTo('confirm', message='Passwords do not match.'),
                                          Length(min=8, max=32)])
-    confirm = PasswordField('Confirm Password', validators=[DataRequired()])
+    confirm = PasswordField('Confirm Password')
+    active = BooleanField('Active', default=False)
+    admin = BooleanField('Administrator', default=False)
+    enduser = BooleanField('End-User', default=True)
 
 
 @app.route('/register/')
 @login_required
+@roles_required('admin')
 def show_register_user():
     """
     Display the Register User page.
@@ -508,6 +520,7 @@ def show_register_user():
 
 @app.route('/do_register/', methods=['POST'])
 @login_required
+@roles_required('admin')
 def insert_user():
     """
     Insert a row into the users table.
@@ -521,23 +534,28 @@ def insert_user():
     form = RegistrationForm(request.form, csrf_enabled=False)
 
     if form.validate_on_submit():
-        new_user = User(form.email.data, utils.hash_password(form.password.data), form.email.data, form.name.data)
+        new_user = User(form.email.data, utils.hash_password(form.password.data), form.name.data)
+        new_user.active = form.active.data
 
         # Check if user already exists
         existing_user = User.query.filter_by(email=form.email.data).first()
 
         if existing_user is not None:
-            flash('Invalid email.', 'danger')
+            flash('Invalid email.', ALERT_DANGER)
             return render_template('register_user.html', form=form, error=error)
         else:
             # Add user to database
             db.session.add(new_user)
+            if form.admin.data == True:
+                user_datastore.add_role_to_user(new_user, 'admin')
+            if form.enduser.data == True:
+                user_datastore.add_role_to_user(new_user, 'end-user')
             db.session.commit()
 
-            flash('New user \'{}\' was successfully added.'.format(new_user.email), 'success')
-            return redirect(url_for('show_start'))
+            flash('New user \'{}\' was successfully added.'.format(new_user.name), ALERT_SUCCESS)
+            return redirect(url_for('show_edit_all_users'))
 
-    return render_template('register_user.html', form=form, error=error)
+    return redirect(url_for('show_register_user', error=error))
 
 
 @app.route('/edit_user/')
@@ -579,17 +597,28 @@ def update_user():
         user_to_update.email = form.email.data
         user_to_update.name = form.name.data
         user_to_update.password = utils.hash_password(form.password.data)
+        user_to_update.active = form.active.data
+
+        if form.admin.data == True:
+            user_datastore.add_role_to_user(user_to_update, 'admin')
+        if form.enduser.data == True:
+            user_datastore.add_role_to_user(user_to_update, 'end-user')
 
         db.session.commit()
 
-        flash('User \'{}\' successfully updated.'.format(user_to_update.email), 'success')
+        flash('User \'{}\' successfully updated.'.format(user_to_update.name), ALERT_SUCCESS)
 
     flash_errors(form)
-    return redirect(url_for('show_edit_user', error=error))
+    current_user = User.query.get(session['user_id'])
+    if current_user.has_role('admin'):
+        return redirect(url_for('show_edit_all_users', error=error))
+    else:
+        return redirect(url_for('show_edit_user', error=error))
 
 
 @app.route('/edit_all_users/')
 @login_required
+@roles_required('admin')
 def show_edit_all_users():
     """
     Show form to edit all user information.
@@ -602,9 +631,12 @@ def show_edit_all_users():
     # TODO: Figure out why CSRF token is missing and re-enable
     form = RegistrationForm(request.form, csrf_enabled=False)
 
-    users_to_show = User.query.all()
+    users_to_show = User.query \
+        .with_entities(User.id, User.name, User.email, User.active) \
+        .all()
 
-    return render_template('edit_all_users.html', error=error, form=form)
+    return render_template('edit_all_users.html', error=error, form=form, users=users_to_show,
+                           user_datastore=user_datastore)
 
 
 @app.route('/dashboard/')
@@ -687,6 +719,7 @@ def show_dashboard():
 
 @app.route('/dashboard_as_admin/')
 @login_required
+@roles_required('admin')
 def show_dashboard_as_admin():
     """
     Display Administrator dashboard.
@@ -923,7 +956,7 @@ def insert_doc_change():
         # Store ID of last row added
         doc_change_id = new_doc_change.id
 
-        flash('Document Change {} was successfully added.'.format(doc_change_id), 'success')
+        flash('Document Change {} was successfully added.'.format(doc_change_id), ALERT_SUCCESS)
 
     flash_errors(doc_change_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
@@ -962,7 +995,7 @@ def update_doc_change(doc_change_id):
 
         db.session.commit()
 
-        flash('Document Change {} was successfully updated.'.format(doc_change_id), 'success')
+        flash('Document Change {} was successfully updated.'.format(doc_change_id), ALERT_SUCCESS)
 
     flash_errors(doc_change_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
@@ -995,7 +1028,7 @@ def insert_affected_part_no():
         db.session.add(new_affected_part)
         db.session.commit()
 
-        flash('Part number \'{}\' was successfully added.'.format(part_no), 'success')
+        flash('Part number \'{}\' was successfully added.'.format(part_no), ALERT_SUCCESS)
 
     flash_errors(doc_change_affected_parts_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
@@ -1027,7 +1060,7 @@ def update_affected_part_no():
         # Update data in DB
         db.session.commit()
 
-        flash('Part number \'{}\' was successfully updated.'.format(part_no), 'success')
+        flash('Part number \'{}\' was successfully updated.'.format(part_no), ALERT_SUCCESS)
 
     flash_errors(doc_change_affected_parts_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
@@ -1052,7 +1085,7 @@ def delete_affected_part_no(row_id):
     db.session.delete(affected_part)
     db.session.commit()
 
-    flash('Part \'{}\' was successfully deleted.'.format(part_no), 'success')
+    flash('Part \'{}\' was successfully deleted.'.format(part_no), ALERT_SUCCESS)
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 
@@ -1090,7 +1123,7 @@ def insert_request():
         db.session.add(new_request)
         db.session.commit()
 
-        flash('Request stakeholder {} was successfully added.'.format(new_request.user.name), 'success')
+        flash('Request stakeholder {} was successfully added.'.format(new_request.user.name), ALERT_SUCCESS)
 
     flash_errors(doc_change_request_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
@@ -1133,7 +1166,7 @@ def update_request():
         # Insert data into DB
         db.session.commit()
 
-        flash('Request stakeholder {} was successfully updated.'.format(updated_request.user.name), 'success')
+        flash('Request stakeholder {} was successfully updated.'.format(updated_request.user.name), ALERT_SUCCESS)
 
         check_doc_change_status(doc_change_id)
 
@@ -1160,7 +1193,7 @@ def delete_request(row_id):
     db.session.delete(request_to_delete)
     db.session.commit()
 
-    flash('Request stakeholder {} was successfully deleted.'.format(request_name), 'success')
+    flash('Request stakeholder {} was successfully deleted.'.format(request_name), ALERT_SUCCESS)
 
     check_doc_change_status(doc_change_id)
 
@@ -1202,7 +1235,7 @@ def insert_order():
         db.session.add(order_to_insert)
         db.session.commit()
 
-        flash('Order was successfully added.', 'success')
+        flash('Order was successfully added.', ALERT_SUCCESS)
 
     flash_errors(doc_change_order_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
@@ -1246,7 +1279,7 @@ def update_order():
         # Update data in DB
         db.session.commit()
 
-        flash('Order was successfully updated.', 'success')
+        flash('Order was successfully updated.', ALERT_SUCCESS)
 
         check_doc_change_status(doc_change_id)
 
@@ -1272,7 +1305,7 @@ def delete_order(row_id):
     db.session.delete(order_to_delete)
     db.session.commit()
 
-    flash('Order was successfully deleted.', 'success')
+    flash('Order was successfully deleted.', ALERT_SUCCESS)
 
     check_doc_change_status(doc_change_id)
 
@@ -1306,7 +1339,7 @@ def insert_notice():
         db.session.add(notice_to_insert)
         db.session.commit()
 
-        flash('Notice was successfully added.', 'success')
+        flash('Notice was successfully added.', ALERT_SUCCESS)
 
     flash_errors(doc_change_notice_form)
     return redirect(url_for('show_doc_change', error=error, doc_change_id=doc_change_id))
@@ -1343,7 +1376,7 @@ def update_notice():
         # Update data in DB
         db.session.commit()
 
-        flash('Notice was successfully updated.', 'success')
+        flash('Notice was successfully updated.', ALERT_SUCCESS)
 
         check_doc_change_status(doc_change_id)
 
@@ -1370,7 +1403,7 @@ def delete_notice(row_id):
     db.session.delete(notice_to_delete)
     db.session.commit()
 
-    flash('Notice was successfully deleted.', 'success')
+    flash('Notice was successfully deleted.', ALERT_SUCCESS)
 
     check_doc_change_status(doc_change_id)
 
@@ -1399,7 +1432,7 @@ def copy_request_to_notice(doc_change_id):
 
     db.session.commit()
 
-    flash('Request stakeholders successfully copied to Notice.', 'success')
+    flash('Request stakeholders successfully copied to Notice.', ALERT_SUCCESS)
 
     return redirect(url_for('show_doc_change', doc_change_id=doc_change_id))
 

@@ -1,11 +1,18 @@
 {% extends "layout.html" %}
 {% block navbar %}
-    <div class="jumbotron">
-        <h1>Document Change System</h1>
-        <p>Quickly and easily guide changes through the organization, knowing that every affected document is assigned,
-            tracked, and followed up on.</p>
-        <p>
-            <a class="btn btn-lg btn-primary" href="{{ url_for('show_login') }}">Get Started</a>
-        </p>
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+            <br><br>
+            <h1 class="header center">Document Change System</h1>
+            <div class="row center">
+                <h5 class="header col s12 light">Quickly and easily guide changes through the organization, knowing that
+                    every affected document is assigned, tracked, and followed up on.</h5>
+            </div>
+            <div class="row center">
+                <a href="{{ url_for('show_login') }}" class="btn-large waves-effect waves-light">Get Started</a>
+            </div>
+            <br><br>
+
+        </div>
     </div>
 {% endblock %}

@@ -1,235 +1,248 @@
-{% extends "layout.html" %}
-{% block body %}
-    <div class="container">
-        {% if error %}
-            <div class="alert alert-danger">
-                <p><strong>Error:</strong> {{ error }}</p>
-            </div>
-        {% endif %}
+{% extends "layout.html"-%}
+{% block body -%}
+<div class="container">
+    {% if error -%}
+    <div class="alert alert-danger">
+        <p><strong>Error:</strong> {{ error }}</p>
     </div>
-    <div class="container">
-        <h2>Dashboard for {{ session.name }}</h2>
-    </div>
+    {% endif -%}
+</div>
+<div class="container">
+    <h2>Dashboard for {{ session.name }}</h2>
+</div>
 
-    <!-- Incomplete Requests Panel -->
-    <div class="container">
-        {% if inc_req_results %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title" data-toggle="tooltip"
-                        title="Requests that have either no Affected Part Nos or no Stakeholders"
-                        data-placement="auto left">Incomplete Requests</h4>
-                </div>
-                <div class="panel-body">
-                    <div class="table table-responsive">
-                        <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
-                            <thead>
-                            <tr>
-                                <th data-sortable="true" data-align="center">ID</th>
-                                <th data-sortable="true" data-align="center">Submit Date</th>
-                                <th data-sortable="false" data-align="left">Problem</th>
-                                <th data-sortable="false" data-align="left">Proposal</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {# TODO: add class="danger" for past due requests #}
-                            {% for row in inc_req_results %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
-                                    </td>
-                                    <td>{{ row['submit_date'] }}</td>
-                                    <td>{{ row['problem_desc'] }}</td>
-                                    <td>{{ row['proposal_desc'] }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div> <!-- /Incomplete Requests Panel -->
-        {% endif %}
-
-        <!-- Pending Requests Panel -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title" data-toggle="tooltip"
-                    title="Requests that have you as a stakeholder, but have not yet been approved"
-                    data-placement="auto left">Pending Requests</h4>
-            </div>
-            <div class="panel-body">
-                <div class="table table-responsive">
-                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
-                        <thead>
-                        <tr>
-                            <th data-sortable="true" data-align="center">ID</th>
-                            <th data-sortable="true" data-align="center">Submit Date</th>
-                            <th data-sortable="false" data-align="left">Problem</th>
-                            <th data-sortable="false" data-align="left">Proposal</th>
-                            <th data-sortable="false" data-align="left">Affected Part Nos</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {# TODO: add class="danger" for past due requests #}
-                        {% for row in req_results %}
-                            <tr>
-                                <td>
-                                    <a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a>
-                                </td>
-                                <td>{{ row.submit_date }}</td>
-                                <td>{{ row.problem_desc }}</td>
-                                <td>{{ row.proposal_desc }}</td>
-                                <td>{{ row[4] }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div> <!-- /Pending Requests Panel -->
-
-        <!-- Incomplete Orders Panel -->
-        {% if inc_ord_results %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title" data-toggle="tooltip"
-                        title="Orders that have no Documents"
-                        data-placement="auto left">Incomplete Orders</h4>
-                </div>
-                <div class="panel-body">
-                    <div class="table table-responsive">
-                        <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
-                            <thead>
-                            <tr>
-                                <th data-sortable="true" data-align="center">ID</th>
-                                <th data-sortable="true" data-align="center">Submit Date</th>
-                                <th data-sortable="false" data-align="left">Problem</th>
-                                <th data-sortable="false" data-align="left">Proposal</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {# TODO: add class="danger" for past due requests #}
-                            {% for row in inc_ord_results %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
-                                    </td>
-                                    <td>{{ row['submit_date'] }}</td>
-                                    <td>{{ row['problem_desc'] }}</td>
-                                    <td>{{ row['proposal_desc'] }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div> <!-- /Incomplete Orders Panel -->
-        {% endif %}
-
-        <!-- Pending Orders Panel -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title" data-toggle="tooltip"
-                    title="Orders that have you as responsible for a document, but have not yet been completed"
-                    data-placement="auto left">Pending Orders</h4>
-            </div>
-            <div class="panel-body">
-                <div class="table table-responsive">
-                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
-                        <thead>
-                        <tr>
-                            <th data-sortable="true" data-align="center">ID</th>
-                            <th data-sortable="false" data-align="left">Document</th>
-                            <th data-sortable="false" data-align="left">Notes</th>
-                            <th data-sortable="true" data-align="center">Due Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {# TODO: add class="danger" for past due orders #}
-                        {% for row in ord_results %}
-                            <tr>
-                                <td>
-                                    <a href="{{ url_for('show_doc_change', doc_change_id = row.DocChange.id) }}">{{ row.DocChange.id }}</a>
-                                </td>
-                                <td>{{ row.type }}</td>
-                                <td>{{ row.notes }}</td>
-                                <td>{{ row.due_date }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div> <!-- /Pending Orders Panel -->
-
-        <!-- Incomplete Notices Panel -->
-        {% if inc_ntc_results %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title" data-toggle="tooltip"
-                        title="Notices that have no Authorizers"
-                        data-placement="auto left">Incomplete Notices</h4>
-                </div>
-                <div class="panel-body">
-                    <div class="table table-responsive">
-                        <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
-                            <thead>
-                            <tr>
-                                <th data-sortable="true" data-align="center">ID</th>
-                                <th data-sortable="true" data-align="center">Submit Date</th>
-                                <th data-sortable="false" data-align="left">Problem</th>
-                                <th data-sortable="false" data-align="left">Proposal</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {# TODO: add class="danger" for past due requests #}
-                            {% for row in inc_ntc_results %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
-                                    </td>
-                                    <td>{{ row['submit_date'] }}</td>
-                                    <td>{{ row['problem_desc'] }}</td>
-                                    <td>{{ row['proposal_desc'] }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div> <!-- /Incomplete Notices Panel -->
-        {% endif %}
-
-        <!-- Pending Notices Panel -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title" data-toggle="tooltip"
-                    title="Notices that have you as an authorizer, but have not yet been authorized"
-                    data-placement="auto left">Pending Notices</h4>
-            </div>
-            <div class="panel-body">
-                <div class="table table-striped table-responsive">
-                    <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
-                        <thead>
-                        <tr>
-                            <th data-sortable="true" data-align="center">ID</th>
-                            <th data-sortable="true" data-align="center">Proposed Implementation Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {# TODO: add class="danger" for past due notices #}
-                        {% for row in ntc_results %}
-                            <tr>
-                                <td>
-                                    <a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a>
-                                </td>
-                                <td>{{ row.proposed_implement_date }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+<!-- Incomplete Requests Panel -->
+<div class="container">
+    {% if inc_req_results -%}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title" data-toggle="tooltip"
+                title="Requests that have either no Affected Part Nos or no Stakeholders"
+                data-placement="auto left">Incomplete Requests</h4>
+        </div>
+        <div class="panel-body">
+            <div class="table table-responsive">
+                <table id="incomplete_req_table" class="tablesorter">
+                    <thead>
+                    <tr>
+                        <th data-sortable="true" data-align="center">ID</th>
+                        <th data-sortable="true" data-align="center">Submit Date</th>
+                        <th data-sortable="false" data-align="left">Problem</th>
+                        <th data-sortable="false" data-align="left">Proposal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# TODO: add class="danger" for past due requests #}
+                    {% for row in inc_req_results -%}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
+                        </td>
+                        <td>{{ row['submit_date'] }}</td>
+                        <td>{{ row['problem_desc'] }}</td>
+                        <td>{{ row['proposal_desc'] }}</td>
+                    </tr>
+                    {% endfor -%}
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div> <!-- /Pending Notices Panel -->
-{% endblock %}
+    </div> <!-- /Incomplete Requests Panel -->
+    {% endif -%}
+
+    <!-- Pending Requests Panel -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title" data-toggle="tooltip"
+                title="Requests that have you as a stakeholder, but have not yet been approved"
+                data-placement="auto left">Pending Requests</h4>
+        </div>
+        <div class="panel-body">
+            <div class="table table-responsive">
+                <table id="pending_req_table" class="tablesorter">
+                    <thead>
+                    <tr>
+                        <th data-sortable="true" data-align="center">ID</th>
+                        <th data-sortable="true" data-align="center">Submit Date</th>
+                        <th data-sortable="false" data-align="left">Problem</th>
+                        <th data-sortable="false" data-align="left">Proposal</th>
+                        <th data-sortable="false" data-align="left">Affected Part Nos</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# TODO: add class="danger" for past due requests #}
+                    {% for row in req_results -%}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a>
+                        </td>
+                        <td>{{ row.submit_date }}</td>
+                        <td>{{ row.problem_desc }}</td>
+                        <td>{{ row.proposal_desc }}</td>
+                        <td>{{ row[4] }}</td>
+                    </tr>
+                    {% endfor -%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- /Pending Requests Panel -->
+
+    <!-- Incomplete Orders Panel -->
+    {% if inc_ord_results -%}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title" data-toggle="tooltip"
+                title="Orders that have no Documents"
+                data-placement="auto left">Incomplete Orders</h4>
+        </div>
+        <div class="panel-body">
+            <div class="table table-responsive">
+                <table id="incomplete_ord_table" class="tablesorter">
+                    <thead>
+                    <tr>
+                        <th data-sortable="true" data-align="center">ID</th>
+                        <th data-sortable="true" data-align="center">Submit Date</th>
+                        <th data-sortable="false" data-align="left">Problem</th>
+                        <th data-sortable="false" data-align="left">Proposal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# TODO: add class="danger" for past due requests #}
+                    {% for row in inc_ord_results -%}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
+                        </td>
+                        <td>{{ row['submit_date'] }}</td>
+                        <td>{{ row['problem_desc'] }}</td>
+                        <td>{{ row['proposal_desc'] }}</td>
+                    </tr>
+                    {% endfor -%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- /Incomplete Orders Panel -->
+    {% endif -%}
+
+    <!-- Pending Orders Panel -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title" data-toggle="tooltip"
+                title="Orders that have you as responsible for a document, but have not yet been completed"
+                data-placement="auto left">Pending Orders</h4>
+        </div>
+        <div class="panel-body">
+            <div class="table table-responsive">
+                <table id="pending_ord_table" class="tablesorter">
+                    <thead>
+                    <tr>
+                        <th data-sortable="true" data-align="center">ID</th>
+                        <th data-sortable="false" data-align="left">Document</th>
+                        <th data-sortable="false" data-align="left">Notes</th>
+                        <th data-sortable="true" data-align="center">Due Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# TODO: add class="danger" for past due orders #}
+                    {% for row in ord_results -%}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('show_doc_change', doc_change_id = row.DocChange.id) }}">{{ row.DocChange.id }}</a>
+                        </td>
+                        <td>{{ row.type }}</td>
+                        <td>{{ row.notes }}</td>
+                        <td>{{ row.due_date }}</td>
+                    </tr>
+                    {% endfor -%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- /Pending Orders Panel -->
+
+    <!-- Incomplete Notices Panel -->
+    {% if inc_ntc_results -%}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title" data-toggle="tooltip"
+                title="Notices that have no Authorizers"
+                data-placement="auto left">Incomplete Notices</h4>
+        </div>
+        <div class="panel-body">
+            <div class="table table-responsive">
+                <table id="incomplete_ntc_table" class="tablesorter">
+                    <thead>
+                    <tr>
+                        <th data-sortable="true" data-align="center">ID</th>
+                        <th data-sortable="true" data-align="center">Submit Date</th>
+                        <th data-sortable="false" data-align="left">Problem</th>
+                        <th data-sortable="false" data-align="left">Proposal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# TODO: add class="danger" for past due requests #}
+                    {% for row in inc_ntc_results -%}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('show_doc_change', doc_change_id = row['id']) }}">{{ row['id'] }}</a>
+                        </td>
+                        <td>{{ row['submit_date'] }}</td>
+                        <td>{{ row['problem_desc'] }}</td>
+                        <td>{{ row['proposal_desc'] }}</td>
+                    </tr>
+                    {% endfor -%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- /Incomplete Notices Panel -->
+    {% endif -%}
+
+    <!-- Pending Notices Panel -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title" data-toggle="tooltip"
+                title="Notices that have you as an authorizer, but have not yet been authorized"
+                data-placement="auto left">Pending Notices</h4>
+        </div>
+        <div class="panel-body">
+            <div class="table table-striped table-responsive">
+                <table id="pending_ntc_table" class="tablesorter">
+                    <thead>
+                    <tr>
+                        <th data-sortable="true" data-align="center">ID</th>
+                        <th data-sortable="true" data-align="center">Proposed Implementation Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# TODO: add class="danger" for past due notices #}
+                    {% for row in ntc_results -%}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a>
+                        </td>
+                        <td>{{ row.proposed_implement_date }}</td>
+                    </tr>
+                    {% endfor -%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div> <!-- /Pending Notices Panel -->
+{% endblock -%}
+{% block js -%}
+<!-- TableSorter JS -->
+<script>
+    $(function () {
+        $('#incomplete_req_table').tablesorter();
+        $('#pending_req_table').tablesorter();
+        $('#incomplete_ord_table').tablesorter();
+        $('#pending_ord_table').tablesorter();
+        $('#incomplete_ntc_table').tablesorter();
+        $('#pending_ntc_table').tablesorter();
+    });
+</script>
+{% endblock -%}

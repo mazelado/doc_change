@@ -1,17 +1,16 @@
-{% extends "layout.html" %}
-{% block body %}
+{% extends "layout.html" -%}
+{% block body -%}
     <div class="container">
-        {% if error %}
+        {% if error -%}
             <div class="alert alert-danger">
                 <p><strong>Error:</strong> {{ error }}</p>
             </div>
-        {% endif %}
+        {% endif -%}
     </div>
     <div class="container">
         <h2>View All Document Changes</h2>
         <div class="table table-responsive">
-            <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true"
-                   data-height="750">
+            <table id="doc_change_table">
                 <thead>
                 <tr>
                     <th data-sortable="true" data-align="center">ID</th>
@@ -23,7 +22,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for row in rows %}
+                {% for row in rows -%}
                     <tr>
                         <td><a href="{{ url_for('show_doc_change', doc_change_id = row.id) }}">{{ row.id }}</a></td>
                         <td>{{ row.status }}</td>
@@ -32,9 +31,20 @@
                         <td>{{ row.proposal_desc }}</td>
                         <td>{{ row[5] }}</td>
                     </tr>
-                {% endfor %}
+                {% endfor -%}
                 </tbody>
             </table>
         </div>
     </div>
-{% endblock %}
+{% endblock -%}
+{% block js -%}
+<!-- TableSorter JS -->
+<!-- TableSorter Pager Plugin -->
+<script src="{{ url_for('static', filename='js/jquery.tablesorter.pager.js') }}"></script>
+
+<script>
+    $(function () {
+        $('#doc_change_table').tablesorter();
+    });
+</script>
+{% endblock -%}

@@ -1,31 +1,50 @@
-{% macro render_field(field) %}
+{% macro render_field(field) -%}
     <div class="form-group">
-        {% if field.widget.input_type != 'hidden' %}{{ field.label }}{% endif %}
-        {{ field(**kwargs)|safe }}
-        {% if field.errors %}
-            <ul class="text-danger">
-                {% for error in field.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+        {% if field.type == "BooleanField" -%}
+            {{ field(**kwargs)|safe }}{{ field.label }}
+        {% else -%}
+            {% if field.widget.input_type != 'hidden' -%}{{ field.label }}{% endif -%}
+            {{ field(**kwargs)|safe }}
+            {% if field.errors -%}
+                <ul class="text-danger">
+                    {% for error in field.errors -%}
+                        <li>{{ error }}</li>
+                    {% endfor -%}
+                </ul>
+            {% endif -%}
+        {% endif -%}
     </div>
-{% endmacro %}
-{% macro render_datepicker(field) %}
+{% endmacro -%}
+{% macro render_booleanfield(field) -%}
+    <div class="input-group">
+        <span class="input-group-addon">
+            {{ field(**kwargs)|safe }}
+        </span>
+        {% if field.widget.input_type != 'hidden' -%}<label class="form-control" aria-label="{{ field.label.text }}">{{ field.label.text }}</label>{% endif -%}
+        {% if field.errors -%}
+            <ul class="text-danger">
+                {% for error in field.errors -%}
+                    <li>{{ error }}</li>
+                {% endfor -%}
+            </ul>
+        {% endif -%}
+    </div>
+{% endmacro -%}
+{% macro render_datepicker(field) -%}
     <div class="form-group">
-        {% if field.widget.input_type != 'hidden' %}{{ field.label }}{% endif %}
+        {% if field.widget.input_type != 'hidden' -%}{{ field.label }}{% endif -%}
         <div class="input-group date datepicker" data-provide="datepicker">
             {{ field(**kwargs)|safe }}
             <div class="input-group-addon">
                 <span class="glyphicon glyphicon-th"></span>
             </div>
-            {% if field.errors %}
+            {% if field.errors -%}
                 <ul class="text-danger">
-                    {% for error in field.errors %}
+                    {% for error in field.errors -%}
                         <li>{{ error }}</li>
-                    {% endfor %}
+                    {% endfor -%}
                 </ul>
-            {% endif %}
+            {% endif -%}
         </div>
     </div>
-{% endmacro %}
+{% endmacro -%}

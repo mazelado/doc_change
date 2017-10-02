@@ -1,6 +1,125 @@
-{% extends 'layout.html' %}
-{% block body %}
+{% extends 'layout.html' -%}
+{% block body -%}
     <div class="container">
+        {% if error -%}
+            <div class="alert alert-danger">
+                <p><strong>Error:</strong> {{ error }}</p>
+            </div>
+        {% endif -%}
+        {% from "_formhelpers.html" import render_field, render_booleanfield -%}
         <h2>Edit Users</h2>
+        <div class="table table-responsive">
+            <table data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true">
+                <thead>
+                <tr>
+                    <th data-visible="false">ID</th>
+                    <th data-sortable="true" data-align="left" data-valign="middle">Name</th>
+                    <th data-sortable="true" data-align="left" data-valign="middle">Email Address</th>
+                    <th data-sortable="true" data-align="center" data-valign="middle">Active</th>
+                    <th data-sortable="true" data-align="center" data-valign="middle">Admin</th>
+                    <th data-sortable="true" data-align="center" data-valign="middle">End-user</th>
+                    <th data-sortable="false" data-align="center" data-valign="middle">Edit</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in users -%}
+                    {% set user = user_datastore.get_user(row.id) -%}
+                    {% set role_admin, role_enduser = False, False -%}
+                    {% if 'admin' in user.roles %}{% set role_admin = True %}{% endif -%}
+                    {% if 'end-user' in user.roles %}{% set role_enduser = True %}{% endif -%}
+                    <tr>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.email }}</td>
+                        <td><span
+                                class="glyphicon glyphicon-{% if row.active %}ok green-text{% else %}remove red-text{% endif %}"></span>
+                        </td>
+                        <td><span
+                                class="glyphicon glyphicon-{% if role_admin %}ok green-text{% else %}remove red-text{% endif %}"></span>
+                        </td>
+                        <td><span
+                                class="glyphicon glyphicon-{% if role_enduser %}ok green-text{% else %}remove red-text{% endif %}"></span>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" value="Edit" data-toggle="modal"
+                                    data-target="#UserModal"
+                                    data-row_id="{{ row.id }}"
+                                    data-name="{{ row.name }}"
+                                    data-email="{{ row.email }}"
+                                    data-active="{{ row.active }}"
+                                    data-admin="{{ role_admin }}"
+                                    data-enduser="{{ role_enduser }}">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor -%}
+                </tbody>
+            </table>
+            <br>
+            <a href="{{ url_for('show_register_user') }}" class="btn btn-primary pull-right">
+                <span class="glyphicon glyphicon-plus-sign"></span> Add a User
+            </a>
+
+            <!-- Edit User Modal Window -->
+            <div class="modal fade" id="UserModal" tabindex="-1" role="dialog" aria-labelledby="UserModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form action="{{ url_for('update_user') }}" method=post>
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="UserModalLabel">Update User</h4>
+                            </div>
+                            <div class="modal-body">
+                                {{ render_field(form.id, class='form-control') }}
+                                {{ render_field(form.name, class='form-control') }}
+                                {{ render_field(form.email, class='form-control') }}
+                                {{ render_booleanfield(form.active) }}
+                                {{ render_booleanfield(form.admin) }}
+                                {{ render_booleanfield(form.enduser) }}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" id="close"
+                                        data-dismiss="modal">
+                                    <span class="glyphicon glyphicon-remove"></span> Close
+                                </button>
+                                <button class="btn btn-primary" type="submit" id="save">
+                                    <span class="glyphicon glyphicon-save"></span> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div> <!-- /Edit User Modal Window -->
+
+        </div>
     </div>
-{% endblock %}
+{% endblock -%}
+{% block js -%}
+    <script>
+        // Populate User Modal when edit button is clicked
+        $('#UserModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+
+            // Get data from button
+            var row_id = button.data('row_id');
+            var name = button.data('name');
+            var email = button.data('email');
+            var active = (button.data('active') === 'True');
+            var admin = (button.data('admin') === 'True');
+            var enduser = (button.data('enduser') === 'True');
+
+            // Populate fields
+            modal.find('.modal-body #id').val(row_id);
+            modal.find('.modal-body #name').val(name);
+            modal.find('.modal-body #email').val(email);
+            modal.find('.modal-body #active').prop('checked', active);
+            modal.find('.modal-body #admin').prop('checked', admin);
+            modal.find('.modal-body #enduser').prop('checked', enduser);
+
+        })
+    </script>
+{% endblock -%}

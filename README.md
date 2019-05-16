@@ -11,11 +11,3 @@ Inactive - unable to continue development, dependant software no longer in use
 * [WTForms](https://wtforms.readthedocs.io/)
 * [Bootstrap](https://getbootstrap.com/)
 * [Materialize](https://materializecss.com/)
-
-## To do:
-* Finish conversion from Bootstrap to Materialize
-* In show_all_doc_changes(), change table so that it can sort id and submit_date by value, not alphabetical
-* Receiving and error *FlaskWTFDeprecationWarning: "csrf_enabled" is deprecated and will be removed in 1.0. Set "meta.csrf" instead.* Workaround was to disable CSRF. Need to find a way to enable CSRF without breaking WTForms.
-* Break the code into modules to separate views
-* Add Flask-RESTful to create a REST API to help with generating emails
-* Try porting to Django for comparison
